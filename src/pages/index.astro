@@ -32,26 +32,26 @@ const stack = {
   <section class="hero papel">
     <div class="container hero-grade">
       <div>
-        <p class="rotulo entrar" style="--d:.05s"><span class="runa">ᚠ</span> whoami · {site.local}</p>
+        <p class="rotulo entrar" style="--d:.05s"><span class="runa">ᚠ</span> <b>{site.nome}</b> · engenheiro backend sênior · {site.local}</p>
         <h1 class="entrar" style="--d:.15s">
           Faço produtos em que a <em>IA conversa</em><br />
           e o <span class="maquina">backend decide</span>.
         </h1>
         <p class="hero-sub humano entrar" style="--d:.35s">
-          Engenheiro backend sênior (Java, Go, Python) com mais de 20 anos em tecnologia, de autorizadores de pagamento a sistemas de alto volume.
-          Hoje faço Engenharia de Plataforma com IA aplicada e sou o <b>{site.epiteto.toLowerCase()}</b>: eles remam,
-          eu decido o rumo e carimbo cada decisão que importa.
+          Engenheiro backend sênior (Java, Go, Python) com mais de 20 anos em tecnologia, de autorizadores de pagamento
+          ao e-commerce de alto volume do Mercado Livre. Hoje faço Engenharia de Plataforma com IA aplicada no Bradesco.
+          Nas horas vagas, sou o <b>{site.epiteto.toLowerCase()}</b>: eles remam, eu decido o rumo e carimbo cada decisão que importa.
         </p>
         <div class="hero-acoes entrar" style="--d:.5s">
-          <a class="botao primario" href="#projetos">ver a tripulação</a>
-          <a class="botao" href={site.github} target="_blank" rel="noopener">github</a>
-          <a class="botao" href={`${import.meta.env.BASE_URL}curriculo/`}>currículo</a>
+          <a class="botao primario" href="#projetos">ver projetos</a>
+          <a class="botao" href={`${import.meta.env.BASE_URL}julien-crouzillard-curriculo.pdf`} download>baixar currículo (pdf)</a>
+          <a class="botao" href="#contato">falar comigo</a>
           <Carimbo texto="Humano no circuito" rotacao={4} />
         </div>
       </div>
       <figure class="retrato entrar" style="--d:.3s">
         <div class="moldura">
-          <Image src={retrato} alt="Julien em trajes nórdicos, com peles e um machado rúnico no ombro" widths={[360, 720]} sizes="(max-width: 860px) 260px, 360px" loading="eager" />
+          <Image src={retrato} alt="Retrato de Julien em xilogravura de três tons, dentro de um anel rúnico" widths={[360, 720]} sizes="(max-width: 860px) 260px, 360px" loading="eager" />
           <i class="tinta" aria-hidden="true"></i>
           <i class="hachura" aria-hidden="true"></i>
           <i class="grao" aria-hidden="true"></i>
@@ -175,6 +175,7 @@ const stack = {
   .hero { padding-top: clamp(56px, 9vw, 112px); }
   .hero-grade { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr); gap: 40px; align-items: center; }
   .hero-sub b { font-weight: 400; color: var(--vermelho); }
+  .hero .rotulo b { color: var(--texto); font-weight: 500; }
   .retrato { margin: 0; position: relative; justify-self: center; width: min(360px, 100%); }
   .moldura { position: relative; aspect-ratio: 1; }
   .moldura :global(img) { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;
@@ -200,6 +201,8 @@ const stack = {
   .retrato:hover :global(img) { transform: scale(1.03); }
   .retrato figcaption { margin-top: 12px; text-align: center; color: var(--texto-3); font-size: .7rem; }
   @media (max-width: 860px) { .hero-grade { grid-template-columns: 1fr; } .retrato { width: min(260px, 70%); order: -1; } }
+  /* no celular o retrato encolhe para os botões caberem na primeira tela */
+  @media (max-width: 560px) { .retrato { width: 150px; } .retrato figcaption { display: none; } .hero { padding-top: 40px; } }
   h1 { font-size: clamp(2.6rem, 7.2vw, 5.4rem); max-width: 18ch; margin: 20px 0 24px; }
   h1 em { color: var(--vermelho); }
   h1 .maquina { font-size: 0.62em; font-weight: 500; letter-spacing: -0.01em; background: var(--texto); color: var(--bg); padding: 0.06em 0.3em; border-radius: 4px; vertical-align: 0.1em; }

@@ -2,11 +2,11 @@
 // Currículo em uma coluna, legível por pessoas e por importadores de vagas (ATS).
 // A identidade viking entra só em elementos que os leitores ignoram: cor, linhas, imagem e SVG sem texto.
 // O mesmo HTML gera o PDF em public/ (ver comentário em src/data/curriculo.ts).
-import { Image } from 'astro:assets';
 import { curriculo as c } from '../data/curriculo';
-import retrato from '../assets/retrato-xilo.png';
 import Corvo from '../assets/corvo.svg';
 const base = import.meta.env.BASE_URL;
+// o e-mail não vai em texto no HTML do site: é montado por script e só aparece na impressão (o PDF)
+const [emailUsuario, emailDominio] = c.email.split('@');
 ---
 
 <!doctype html>
@@ -36,12 +36,12 @@ const base = import.meta.env.BASE_URL;
           <h1>{c.nome}</h1>
           <p class="titulo">{c.titulo}</p>
           <p class="contato">
-            <span>{c.local}</span> | <span>{c.email}</span><br />
+            <span>{c.local}</span><span class="so-pdf"> | <span data-email-u={emailUsuario} data-email-d={emailDominio}></span></span><br />
             <span>{c.linkedin}</span> | <span>{c.github}</span> | <span>{c.portfolio}</span>
           </p>
         </div>
         <div class="selo" aria-hidden="true">
-          <Image src={retrato} alt="" width={240} height={240} />
+          <svg class="runa-selo" viewBox="0 0 120 120"><path d="M58 30 L44 46 L58 62 M62 58 L76 74 L62 90" fill="none" stroke="#171412" stroke-width="5" stroke-linecap="square" /></svg>
           <svg class="anel" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="58" fill="none" stroke="#9a7a2e" stroke-width="1" />
             <circle cx="60" cy="60" r="54.5" fill="none" stroke="#b8322a" stroke-width="2.2" />
@@ -72,7 +72,8 @@ const base = import.meta.env.BASE_URL;
 
       <section>
         <h2>Projetos</h2>
-        {c.projetos.map((p) => <p>{p}</p>)}
+        <p>{c.projetos.resumo}</p>
+        <ul>{c.projetos.itens.map((p) => <li>{p}</li>)}</ul>
       </section>
 
       <section>
@@ -94,6 +95,9 @@ const base = import.meta.env.BASE_URL;
 
       <i class="no fim" aria-hidden="true"></i>
     </main>
+    <script is:inline>
+      document.querySelectorAll('[data-email-u]').forEach((el) => { el.textContent = el.dataset.emailU + '@' + el.dataset.emailD; });
+    </script>
   </body>
 </html>
 
@@ -125,10 +129,12 @@ const base = import.meta.env.BASE_URL;
   h1 { font: 400 30pt/1 var(--serifa); margin: 0; letter-spacing: -0.01em; }
   .titulo { margin: 8px 0 8px; font-weight: 600; color: var(--vermelho); font-size: 10pt; }
   .contato { margin: 0; color: var(--texto-2); font: 8.5pt/1.6 var(--mono); }
-  .contato span { white-space: nowrap; } /* URL quebrada no hífen vira outra URL para o leitor de PDF */
+  .contato span { white-space: nowrap; }
+  .so-pdf { display: none; } /* URL quebrada no hífen vira outra URL para o leitor de PDF */
 
   .selo { position: relative; width: 104px; height: 104px; flex: none; }
-  .selo img { position: absolute; inset: 8px; width: 88px; height: 88px; border-radius: 50%; object-fit: cover; filter: sepia(.35) contrast(1.05); }
+  /* runa ᛃ (jera) desenhada, sem rosto: o currículo segue a regra de não levar foto */
+  .runa-selo { position: absolute; inset: 8px; width: 88px; height: 88px; border-radius: 50%; background: #ece3d2; }
   .anel { position: absolute; inset: 0; width: 100%; height: 100%; }
   .corvo { position: absolute; color: var(--ouro); line-height: 0; }
   .corvo.c1 { top: -10px; left: -20px; }
@@ -156,7 +162,7 @@ const base = import.meta.env.BASE_URL;
   .stack { color: var(--texto-3); font: 8pt/1.45 var(--mono); }
 
   .habilidades { list-style: none; padding: 0; }
-  .habilidades strong { font: 500 8.5pt var(--mono); color: var(--vermelho); text-transform: lowercase; }
+  .habilidades strong { font: 500 8.5pt var(--mono); color: var(--vermelho); }
 
   @media (max-width: 640px) {
     .folha { padding: 0 18px 28px; } .no { margin-inline: -18px; } .no.fim { margin: 24px -18px -28px; }
@@ -170,6 +176,7 @@ const base = import.meta.env.BASE_URL;
     :root { --papel: #fff; }
     body { background: #fff; }
     .barra { display: none; }
+    .so-pdf { display: inline; }
     .folha { box-shadow: none; margin: 0; max-width: none; padding: 0 15mm 0; }
     .no { margin: 0 -15mm 22px; } .no.fim { margin: 22px -15mm 0; }
     .cabeca { padding-top: 0; }

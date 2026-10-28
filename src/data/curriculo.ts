@@ -4,7 +4,7 @@
 // (margens padrão) ou peça para o Claude gerar de novo em public/julien-crouzillard-curriculo.pdf.
 export const curriculo = {
   nome: 'Julien Crouzillard',
-  titulo: 'Engenheiro Backend Sênior | Java · Go · Kafka | Engenharia de Plataforma | IA Aplicada',
+  titulo: 'Engenheiro Backend Sênior | Java · Go · Kafka | Plataforma | IA Aplicada',
   local: 'São Paulo, SP, Brasil',
   email: 'jcrouzillard@gmail.com',
   linkedin: 'linkedin.com/in/julien-crouzillard-34147a108',
@@ -78,9 +78,15 @@ export const curriculo = {
     },
   ],
 
-  projetos: [
-    'Produtos próprios com IA (2026), construídos com especificações versionadas e squads de agentes (Claude Code), com aprovação humana e evidência em cada PR: Hermes (produtora de vídeos com 11 agentes), Precedentia (motor verificável de precedentes jurídicos em Go e pgvector), BeeRelay (CRM e gateway multi-tenant de WhatsApp em produção na GCP), FoxSteward e BeeFinance. Estudos de caso em jcrouzillard.github.io.',
-  ],
+  projetos: {
+    resumo: 'Produtos próprios com IA (2026), construídos com especificações versionadas e squads de agentes (Claude Code), com aprovação humana e evidência em cada PR. Estudos de caso em jcrouzillard.github.io.',
+    itens: [
+      'BeeRelay: CRM de marketing e gateway multi-tenant de WhatsApp em produção na GCP, com IA na criação, aprovação humana obrigatória e envio pela API oficial.',
+      'Precedentia: motor verificável de precedentes jurídicos em Go e pgvector, em que toda resposta aponta para a decisão e a fonte oficial.',
+      'Hermes: produtora de vídeos para o YouTube com 11 agentes de IA e aprovação humana nas etapas-chave, com cerca de 1h30 de trabalho humano por semana.',
+      'FoxSteward e BeeFinance: governança de projetos feitos por agentes e assistente financeiro no WhatsApp, em fase inicial.',
+    ],
+  },
 
   habilidades: [
     ['Linguagens', 'Java, Go, Python, TypeScript, JavaScript'],
