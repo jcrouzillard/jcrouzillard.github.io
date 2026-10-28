@@ -7,6 +7,8 @@ export const site = {
   github: 'https://github.com/jcrouzillard',
   linkedin: 'https://www.linkedin.com/in/julien-crouzillard-34147a108/',
   email: '', // deixe vazio para não expor
+  // código do site no GoatCounter (https://<código>.goatcounter.com); vazio desliga a contagem
+  goatcounter: 'jcrouzillard',
   descricao:
     'Portfólio de Julien Crouzillard: engenheiro backend sênior (Java, Go) com mais de 20 anos em tecnologia, Engenharia de Plataforma e produtos com IA construídos com specs, squads de agentes e um backend que decide.',
 };

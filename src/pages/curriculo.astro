@@ -3,6 +3,7 @@
 // A identidade viking entra só em elementos que os leitores ignoram: cor, linhas, imagem e SVG sem texto.
 // O mesmo HTML gera o PDF em public/ (ver comentário em src/data/curriculo.ts).
 import { curriculo as c } from '../data/curriculo';
+import { site } from '../data/site';
 import Corvo from '../assets/corvo.svg';
 const base = import.meta.env.BASE_URL;
 // o e-mail não vai em texto no HTML do site: é montado por script e só aparece na impressão (o PDF)
@@ -93,6 +94,14 @@ const [emailUsuario, emailDominio] = c.email.split('@');
     <script is:inline>
       document.querySelectorAll('[data-email-u]').forEach((el) => { el.textContent = el.dataset.emailU + '@' + el.dataset.emailD; });
     </script>
+    {import.meta.env.PROD && site.goatcounter && (
+      <script
+        is:inline
+        async
+        data-goatcounter={`https://${site.goatcounter}.goatcounter.com/count`}
+        src="https://gc.zgo.at/count.js"
+      ></script>
+    )}
   </body>
 </html>
 

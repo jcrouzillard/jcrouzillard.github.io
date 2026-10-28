@@ -101,6 +101,14 @@ const base = import.meta.env.BASE_URL;
       }), { threshold: 0.6 });
       document.querySelectorAll('[data-contar] dt').forEach((el) => ioNum.observe(el));
     </script>
+    {import.meta.env.PROD && site.goatcounter && (
+      <script
+        is:inline
+        async
+        data-goatcounter={`https://${site.goatcounter}.goatcounter.com/count`}
+        src="https://gc.zgo.at/count.js"
+      ></script>
+    )}
   </body>
 </html>
 
