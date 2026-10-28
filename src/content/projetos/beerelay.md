@@ -11,8 +11,8 @@ visibilidade: privado
 status: Infra em produção · aprovado pela Meta · sem clientes ainda
 desde: mai/2026
 metricas:
-  - { valor: '170+', rotulo: 'pull requests' }
-  - { valor: '150', rotulo: 'issues' }
+  - { valor: '190+', rotulo: 'pull requests (app + infra)' }
+  - { valor: '190+', rotulo: 'issues' }
   - { valor: '4 de 5', rotulo: 'fases concluídas' }
   - { valor: 'IaC', rotulo: 'infra em OpenTofu' }
 fluxo:
