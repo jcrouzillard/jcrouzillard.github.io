@@ -2,7 +2,7 @@
 
 ### Oi, eu sou o Julien 👋
 
-Engenheiro de software em São Paulo. Construo **produtos com IA** em que *a IA conversa e o backend decide*: specs versionadas, squads de agentes (Claude Code), aprovação humana e evidência em cada PR.
+Engenheiro backend sênior (Java, Go, Python) em São Paulo, com mais de 20 anos em tecnologia: pagamentos, sistemas bancários, e-commerce de alto volume e, hoje, Engenharia de Plataforma com IA aplicada. Fora do expediente, construo **produtos com IA** em que *a IA conversa e o backend decide*: specs versionadas, squads de agentes (Claude Code), aprovação humana e evidência em cada PR.
 
 🌐 **Portfólio:** [jcrouzillard.github.io](https://jcrouzillard.github.io) · estudos de caso navegáveis dos projetos abaixo
 
@@ -30,7 +30,7 @@ Engenheiro de software em São Paulo. Construo **produtos com IA** em que *a IA 
 
 #### 🛠️ Stack do dia a dia
 
-`Go` `Python` `TypeScript` `FastAPI` `Next.js` `PostgreSQL` `pgvector` `Claude / Anthropic SDK` `MCP` `GCP Cloud Run` `OpenTofu` `Docker` `GitHub Actions`
+`Java` `Quarkus` `Spring` `Go` `Python` `TypeScript` `FastAPI` `Next.js` `Kafka` `Debezium` `PostgreSQL` `pgvector` `Oracle` `MongoDB` `Claude / Anthropic SDK` `MCP` `GCP Cloud Run` `OpenTofu` `Docker` `Kubernetes` `GitHub Actions` `Datadog` `Grafana`
 
 ---
 

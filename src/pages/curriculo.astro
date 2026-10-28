@@ -1,0 +1,177 @@
+---
+// Currículo em uma coluna, legível por pessoas e por importadores de vagas (ATS).
+// A identidade viking entra só em elementos que os leitores ignoram: cor, linhas, imagem e SVG sem texto.
+// O mesmo HTML gera o PDF em public/ (ver comentário em src/data/curriculo.ts).
+import { Image } from 'astro:assets';
+import { curriculo as c } from '../data/curriculo';
+import retrato from '../assets/retrato-xilo.png';
+import Corvo from '../assets/corvo.svg';
+const base = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Currículo · {c.nome}</title>
+    <meta name="author" content={c.nome} />
+    <meta name="description" content={`Currículo de ${c.nome}: ${c.titulo}.`} />
+    <link rel="icon" href={`${base}favicon.png`} type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="barra">
+      <a href={base}>← voltar ao portfólio</a>
+      <a class="baixar" href={`${base}${c.pdf}`} download>baixar PDF</a>
+    </nav>
+
+    <main class="folha">
+      <i class="no" aria-hidden="true"></i>
+
+      <header class="cabeca">
+        <div class="ident">
+          <h1>{c.nome}</h1>
+          <p class="titulo">{c.titulo}</p>
+          <p class="contato">
+            <span>{c.local}</span> | <span>{c.email}</span><br />
+            <span>{c.linkedin}</span> | <span>{c.github}</span> | <span>{c.portfolio}</span>
+          </p>
+        </div>
+        <div class="selo" aria-hidden="true">
+          <Image src={retrato} alt="" width={240} height={240} />
+          <svg class="anel" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="58" fill="none" stroke="#9a7a2e" stroke-width="1" />
+            <circle cx="60" cy="60" r="54.5" fill="none" stroke="#b8322a" stroke-width="2.2" />
+          </svg>
+          <span class="corvo c1"><Corvo width="28" height="21" /></span>
+          <span class="corvo c2"><Corvo width="19" height="14" /></span>
+        </div>
+      </header>
+
+      <section>
+        <h2>Resumo profissional</h2>
+        {c.resumo.map((p) => <p>{p}</p>)}
+      </section>
+
+      <section>
+        <h2>Experiência profissional</h2>
+        <div class="saga">
+          {c.experiencia.map((e, i) => (
+            <article class={i === 0 ? 'atual' : ''}>
+              <h3>{e.cargo}</h3>
+              <p class="meta">{e.empresa} | {e.local} | {e.periodo}</p>
+              <ul>{e.itens.map((t) => <li>{t}</li>)}</ul>
+              {e.stack && <p class="stack">Tecnologias: {e.stack}</p>}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2>Projetos</h2>
+        {c.projetos.map((p) => <p>{p}</p>)}
+      </section>
+
+      <section>
+        <h2>Habilidades técnicas</h2>
+        <ul class="habilidades">
+          {c.habilidades.map(([g, v]) => <li><strong>{g}:</strong> {v}</li>)}
+        </ul>
+      </section>
+
+      <section>
+        <h2>Formação acadêmica</h2>
+        {c.formacao.map((f) => <p>{f.curso} | {f.instituicao} | {f.periodo}</p>)}
+      </section>
+
+      <section>
+        <h2>Competências profissionais</h2>
+        <p>{c.competencias}</p>
+      </section>
+
+      <i class="no fim" aria-hidden="true"></i>
+    </main>
+  </body>
+</html>
+
+<style>
+  /* Paleta do portfólio: osso, ferro, sangue e bronze */
+  :root {
+    --tinta: #171412; --texto-2: #52483d; --texto-3: #86796a; --linha: #cfc2a8;
+    --vermelho: #b8322a; --ouro: #9a7a2e; --osso: #ece3d2; --papel: #fbf8f2;
+    --serifa: 'Instrument Serif', Georgia, 'Liberation Serif', serif;
+    --sans: Inter, Arial, Helvetica, 'Liberation Sans', sans-serif;
+    --mono: 'JetBrains Mono', Menlo, 'Liberation Mono', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--osso); color: var(--tinta);
+    font: 400 10pt/1.42 var(--sans); font-variant-ligatures: none; /* ligaturas "fi/fl" confundem leitores de PDF */
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .barra { max-width: 820px; margin: 0 auto; padding: 16px; display: flex; justify-content: space-between; align-items: center; font: 10pt var(--mono); }
+  .barra a { color: var(--texto-2); }
+  .barra .baixar { background: var(--vermelho); color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 4px; }
+  .folha { max-width: 820px; margin: 0 auto 48px; background: var(--papel); padding: 0 56px 40px; box-shadow: 0 2px 24px rgb(0 0 0 / .1); }
+
+  /* nó nórdico: a mesma trama de bronze que separa as seções do site */
+  .no { display: block; height: 9px; margin: 0 -56px 26px; opacity: .6; background:
+    repeating-linear-gradient(135deg, var(--ouro) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(45deg, var(--ouro) 0 1px, transparent 1px 7px); }
+  .no.fim { margin: 28px -56px -40px; }
+
+  .cabeca { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; margin-bottom: 6px; }
+  h1 { font: 400 30pt/1 var(--serifa); margin: 0; letter-spacing: -0.01em; }
+  .titulo { margin: 8px 0 8px; font-weight: 600; color: var(--vermelho); font-size: 10pt; }
+  .contato { margin: 0; color: var(--texto-2); font: 8.5pt/1.6 var(--mono); }
+  .contato span { white-space: nowrap; } /* URL quebrada no hífen vira outra URL para o leitor de PDF */
+
+  .selo { position: relative; width: 104px; height: 104px; flex: none; }
+  .selo img { position: absolute; inset: 8px; width: 88px; height: 88px; border-radius: 50%; object-fit: cover; filter: sepia(.35) contrast(1.05); }
+  .anel { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .corvo { position: absolute; color: var(--ouro); line-height: 0; }
+  .corvo.c1 { top: -10px; left: -20px; }
+  .corvo.c2 { top: 6px; right: -16px; transform: scaleX(-1); }
+
+  /* títulos de seção: rótulo em mono, losango de sangue e linha de bronze (desenhados, sem caracteres) */
+  h2 { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px;
+    font: 500 8.5pt var(--mono); text-transform: uppercase; letter-spacing: .14em; color: var(--vermelho); break-after: avoid; }
+  h2::before { content: ''; width: 6px; height: 6px; background: var(--vermelho); transform: rotate(45deg); flex: none; }
+  h2::after { content: ''; flex: 1; height: 1px; background: var(--ouro); opacity: .7; }
+
+  p { margin: 0 0 5px; }
+  ul { margin: 0 0 3px; padding-left: 16px; }
+  li { margin: 0 0 2px; }
+  li::marker { color: var(--ouro); }
+
+  /* experiência como a saga do site: linha do tempo com marcos */
+  .saga { border-left: 1.5px solid var(--tinta); margin-left: 4px; padding-left: 18px; }
+  .saga article { position: relative; padding-bottom: 9px; break-inside: avoid; }
+  .saga article::before { content: ''; position: absolute; left: -24.5px; top: 4px; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--papel); border: 1.5px solid var(--tinta); }
+  .saga article.atual::before { background: var(--vermelho); border-color: var(--vermelho); }
+  h3 { font: 400 13.5pt/1.15 var(--serifa); margin: 0; }
+  .meta { color: var(--texto-2); font: 8.5pt var(--mono); margin: 2px 0 4px; }
+  .stack { color: var(--texto-3); font: 8pt/1.45 var(--mono); }
+
+  .habilidades { list-style: none; padding: 0; }
+  .habilidades strong { font: 500 8.5pt var(--mono); color: var(--vermelho); text-transform: lowercase; }
+
+  @media (max-width: 640px) {
+    .folha { padding: 0 18px 28px; } .no { margin-inline: -18px; } .no.fim { margin: 24px -18px -28px; }
+    .cabeca { grid-template-columns: 1fr; } .selo { order: -1; margin-top: 8px; }
+  }
+  @page { size: A4; margin: 13mm 0 12mm; }
+  @page :first { margin-top: 0; } /* a trama de bronze encosta no topo da primeira folha */
+  @media print {
+    /* no PDF, fontes de sistema: viram TrueType embutida, que importadores de vagas leem melhor que web fonts */
+    :root { --serifa: Georgia, 'Liberation Serif', serif; --sans: Arial, Helvetica, 'Liberation Sans', sans-serif; --mono: Menlo, 'Liberation Mono', 'Courier New', monospace; }
+    :root { --papel: #fff; }
+    body { background: #fff; }
+    .barra { display: none; }
+    .folha { box-shadow: none; margin: 0; max-width: none; padding: 0 15mm 0; }
+    .no { margin: 0 -15mm 22px; } .no.fim { margin: 22px -15mm 0; }
+    .cabeca { padding-top: 0; }
+  }
+</style>
