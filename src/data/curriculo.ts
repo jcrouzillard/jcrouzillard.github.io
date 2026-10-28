@@ -14,7 +14,7 @@ export const curriculo = {
 
   resumo: [
     'Engenheiro backend sênior com mais de 20 anos em tecnologia e, desde 2009, em sistemas críticos de pagamento, banco e e-commerce de alto volume (Bradesco, Mercado Livre), com Java, Go, microsserviços e arquitetura orientada a eventos com Kafka.',
-    'Hoje em Engenharia de Plataforma no Bradesco, com IA aplicada a automação, produtividade e developer experience. Fora do expediente, construo produtos próprios com squads de agentes de IA, um deles em produção na GCP.',
+    'Hoje em Engenharia de Plataforma no Bradesco, com IA aplicada a automação, produtividade e developer experience. Fora do expediente, construo produtos próprios com squads de agentes de IA, um deles já aprovado pela Meta e com infraestrutura na GCP.',
     'Busco posições de engenheiro sênior ou staff em backend, plataforma ou IA aplicada.',
   ],
 
@@ -26,6 +26,7 @@ export const curriculo = {
         'Integro o time que traz inovação ao banco e define as stacks e a forma de desenvolver de todos os devs do Bradesco, internos e terceiros.',
         'Avalio, proponho e padronizo tecnologias, ambientes e práticas de desenvolvimento, e levo sua adoção a times de desenvolvimento, arquitetura, infraestrutura e segurança.',
         'Desenvolvo produtos internos de Engenharia de Plataforma e Developer Experience, com IA aplicada a automação, produtividade e ao ciclo de desenvolvimento.',
+        'Mentoro a equipe no uso de IA e agentes no dia a dia, com apresentações baseadas nos meus próprios produtos.',
       ],
     },
     {
@@ -42,8 +43,7 @@ export const curriculo = {
     {
       cargo: 'Desenvolvedor Full Stack',
       empresa: 'Lojas Riachuelo', local: 'São Paulo, SP', periodo: '07/2019 – 03/2021',
-      itens: ['Aplicações web full stack para processos internos e soluções de varejo, com evolução de sistemas corporativos.'],
-      stack: 'Java, HTML, JavaScript',
+      itens: ['Aplicações web full stack em Java e JavaScript para processos internos e soluções de varejo.'],
     },
     {
       cargo: 'Desenvolvedor Full Stack Java',
@@ -87,7 +87,7 @@ export const curriculo = {
   projetos: {
     resumo: 'Produtos próprios com IA (2026), feitos com specs versionadas e squads de agentes (Claude Code), com aprovação humana em cada PR. Estudos de caso no portfólio.',
     itens: [
-      'BeeRelay: CRM de marketing e gateway multi-tenant de WhatsApp em produção na GCP, com IA na criação, aprovação humana obrigatória e envio pela API oficial.',
+      'BeeRelay: CRM e gateway multi-tenant de WhatsApp, com infraestrutura na GCP e app aprovado pela Meta para enviar e receber mensagens pela API oficial; ainda sem clientes.',
       'Precedentia: motor verificável de precedentes jurídicos em Go e pgvector, em que toda resposta aponta para a decisão e a fonte oficial.',
       'Hermes: produtora de vídeos para o YouTube com 11 agentes de IA e aprovação humana nas etapas-chave, com cerca de 1h30 de trabalho humano por semana.',
       'FoxSteward e BeeFinance (fase inicial): governança de projetos feitos por agentes e finanças no WhatsApp.',

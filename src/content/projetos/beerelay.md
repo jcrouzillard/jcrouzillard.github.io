@@ -8,7 +8,7 @@ cor: '#facc15'
 mascote: ../../assets/projects/beerelay/mascote.svg
 mascoteFala: 'Só entrego para quem disse sim.'
 visibilidade: privado
-status: Em produção · Fase 4 em andamento
+status: Infra em produção · aprovado pela Meta · sem clientes ainda
 desde: mai/2026
 metricas:
   - { valor: '170+', rotulo: 'pull requests' }
