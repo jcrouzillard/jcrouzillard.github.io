@@ -61,20 +61,27 @@ export const curriculo = {
       empresa: 'Foursys (cliente Bradesco)', local: 'São Paulo, SP', periodo: '07/2016 – 12/2017',
       itens: [
         'Liderança técnica do time de desenvolvimento: priorização, distribuição de demandas, revisão técnica e qualidade das entregas.',
-        'Aplicações Java Web, Desktop e Webservices, com Scrum e Kanban.',
+        'Sistemas de crédito do Bradesco em Java Web, Desktop e Webservices: regras de crédito, consignado, limites operacionais e rating de clientes.',
       ],
-      stack: 'Java, Struts, JSF, JSP, WebSphere, Tomcat, JBoss, Jenkins, SonarQube, Git',
+      stack: 'Java, Struts, JSF, JSP, jQuery, WebSphere, Tomcat, JBoss, Jenkins, SonarQube, Git',
     },
     {
       cargo: 'Analista de Desenvolvimento (até Sênior)',
       empresa: 'Prime IT Services (cliente Bradesco)', local: 'São Paulo, SP', periodo: '07/2011 – 07/2016',
-      itens: ['Abertura de contas, terminal financeiro, intranet e integrações com mainframe e sistemas legados.'],
-      stack: 'Java, Spring, JSF, Struts, JSP, Swing, WebSphere, Tomcat',
+      itens: [
+        'Abertura de contas (terminal financeiro e intranet), contratos PF e PJ, firmas e poderes e mensageria entre câmaras bancárias, com integração ao mainframe.',
+      ],
+      stack: 'Java, Spring, JSF, Struts, JSP, EJB, Swing, WebSphere, Tomcat',
     },
     {
-      cargo: 'Analista de Desenvolvimento Júnior',
-      empresa: '2RP (cliente Bradesco)', local: 'São Paulo, SP', periodo: '12/2009 – 07/2011',
-      itens: ['Java Web para sistemas financeiros: autorizador de meios de pagamento, conciliação, lista restritiva e antifraude.'],
+      // começo de carreira num bloco só, para não picar o currículo
+      cargo: 'Início de carreira: desenvolvedor web e Java',
+      empresa: '2RP, Unifesp, SCA-Educandus, Cash & Market', local: 'São Paulo, SP', periodo: '06/2003 – 07/2011',
+      itens: [
+        'Web em PHP, MySQL, JavaScript e Flash: mais de 40 sites para pequenas empresas (2003–05) e portais para um projeto educacional e para a Unifesp (2005–08).',
+        '2RP (12/2009 – 07/2011): Java Web para o Bradesco em autorizador de pagamentos, conciliação, lista restritiva e antifraude.',
+      ],
+      stack: 'Java, PHP, MySQL, JavaScript, XML/XSL, Flash/ActionScript',
     },
   ],
 
@@ -84,14 +91,14 @@ export const curriculo = {
       'BeeRelay: CRM de marketing e gateway multi-tenant de WhatsApp em produção na GCP, com IA na criação, aprovação humana obrigatória e envio pela API oficial.',
       'Precedentia: motor verificável de precedentes jurídicos em Go e pgvector, em que toda resposta aponta para a decisão e a fonte oficial.',
       'Hermes: produtora de vídeos para o YouTube com 11 agentes de IA e aprovação humana nas etapas-chave, com cerca de 1h30 de trabalho humano por semana.',
-      'FoxSteward e BeeFinance: governança de projetos feitos por agentes e assistente financeiro no WhatsApp, em fase inicial.',
+      'FoxSteward e BeeFinance (fase inicial): governança de projetos feitos por agentes e finanças no WhatsApp.',
     ],
   },
 
   habilidades: [
     ['Linguagens', 'Java, Go, Python, TypeScript, JavaScript'],
     ['Backend', 'Quarkus, Spring, FastAPI, Node.js, JSF, Struts, JSP, Servlets'],
-    ['Arquitetura', 'Microsserviços, arquitetura orientada a eventos, sistemas distribuídos, APIs, integrações corporativas'],
+    ['Arquitetura', 'Microsserviços, arquitetura orientada a eventos, sistemas distribuídos, APIs e integrações'],
     ['Mensageria', 'Kafka, Debezium, publish/subscribe, event streaming'],
     ['Dados', 'PostgreSQL, pgvector, Oracle, MongoDB, modelagem e tuning de queries'],
     ['Observabilidade', 'Datadog, Grafana, Kibana, logs, métricas, traces, dashboards e alertas'],
@@ -100,7 +107,5 @@ export const curriculo = {
     ['Plataforma', 'Engenharia de Plataforma, Developer Experience, ferramentas internas'],
   ],
 
-  formacao: [{ curso: 'Bacharelado em Gestão de Sistemas de Informação', instituicao: 'FIAP', periodo: '2017 – 2018' }],
-
-  competencias: 'Liderança técnica, revisão de código, definição de padrões, documentação técnica, análise de incidentes, troubleshooting, visão sistêmica e comunicação com produto, QA, arquitetura, infraestrutura e segurança.',
+  formacao: [{ curso: 'Tecnólogo em Gestão de Sistemas de Informação', instituicao: 'FIAP', periodo: 'concluído em 2018' }],
 };

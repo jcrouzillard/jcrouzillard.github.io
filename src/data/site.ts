@@ -34,8 +34,9 @@ export const principios = [
   },
 ];
 
-// Linha do tempo: dos autorizadores de pagamento ao maestro de squads de agentes (fonte: currículo 2026)
+// Linha do tempo: dos primeiros sites ao maestro de squads de agentes (fonte: currículo 2026)
 export const trajetoria = [
+  { ano: '2003–09', titulo: 'Os primeiros sites', texto: 'Mais de 40 sites para pequenas empresas e artistas, portais em PHP para um projeto educacional e para a Unifesp. Foi ali que virei programador.', maquina: 'php · mysql · javascript · flash' },
   { ano: '2009–11', titulo: 'Começo no coração dos pagamentos', texto: 'Na 2RP, Java Web para o Bradesco: autorizador de meios de pagamento, conciliação, antifraude e lista restritiva.', maquina: 'java web · awb · pdc' },
   { ano: '2011–17', titulo: 'O banco por dentro', texto: 'Prime IT e Foursys: abertura de contas, terminal financeiro, intranet e integrações com mainframe. De analista a líder técnico do time.', maquina: 'java · spring · jsf · struts · websphere' },
   { ano: '2017–21', titulo: 'Full stack, faculdade e o primeiro bot', texto: 'Aplicações web para banco e varejo (Prime IT, CIDIC, Riachuelo), Gestão de Sistemas de Informação na FIAP e um chatbot no Slack por diversão.', maquina: 'java · javascript · angular · react · hubot' },
