@@ -1,0 +1,261 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CardProjeto from '../components/CardProjeto.astro';
+import Carimbo from '../components/Carimbo.astro';
+import { site, principios, trajetoria } from '../data/site';
+import retrato from '../assets/retrato-xilo.png';
+import Corvo from '../assets/corvo.svg';
+import { Image } from 'astro:assets';
+
+const projetos = (await getCollection('projetos')).sort((a, b) => a.data.ordem - b.data.ordem);
+
+// Números agregados do trabalho (atualize quando quiser)
+const numeros = [
+  { valor: '05', rotulo: 'produtos em construção' },
+  { valor: '890+', rotulo: 'pull requests em 2026' },
+  { valor: '590+', rotulo: 'issues planejadas' },
+  { valor: '04', rotulo: 'linguagens: go, python, ts, hcl' },
+];
+
+const stack = {
+  'back-end': ['go', 'python · fastapi', 'typescript · node', 'postgresql · pgvector'],
+  'front-end': ['next.js', 'react', 'tailwind', 'shadcn/ui'],
+  'ia': ['claude · anthropic sdk', 'claude code (squads)', 'mcp · tool calling', 'evals'],
+  'infra': ['gcp cloud run', 'opentofu', 'docker', 'github actions'],
+};
+---
+
+<Base>
+  <section class="hero papel">
+    <div class="container hero-grade">
+      <div>
+        <p class="rotulo entrar" style="--d:.05s"><span class="runa">ᚠ</span> whoami · {site.local}</p>
+        <h1 class="entrar" style="--d:.15s">
+          Faço produtos em que a <em>IA conversa</em><br />
+          e o <span class="maquina">backend decide</span>.
+        </h1>
+        <p class="hero-sub humano entrar" style="--d:.35s">
+          Desde criança apaixonado por tecnologia. Hoje sou o <b>{site.epiteto.toLowerCase()}</b>: eles remam,
+          eu decido o rumo e carimbo cada decisão que importa.
+        </p>
+        <div class="hero-acoes entrar" style="--d:.5s">
+          <a class="botao primario" href="#projetos">ver a tripulação</a>
+          <a class="botao" href={site.github} target="_blank" rel="noopener">github</a>
+          <Carimbo texto="Humano no circuito" rotacao={4} />
+        </div>
+      </div>
+      <figure class="retrato entrar" style="--d:.3s">
+        <div class="moldura">
+          <Image src={retrato} alt="Julien em trajes nórdicos, com peles e um machado rúnico no ombro" widths={[360, 720]} sizes="(max-width: 860px) 260px, 360px" loading="eager" />
+          <i class="tinta" aria-hidden="true"></i>
+          <i class="hachura" aria-hidden="true"></i>
+          <i class="grao" aria-hidden="true"></i>
+          <svg class="anel" viewBox="0 0 240 240" aria-hidden="true">
+            <circle cx="120" cy="120" r="117" fill="none" stroke="var(--ouro)" stroke-width="1.2" />
+            <circle cx="120" cy="120" r="112" fill="none" stroke="var(--vermelho)" stroke-width="2.4" />
+            <g font-family="'Noto Sans Runic', serif" font-size="7.5" fill="var(--ouro)" letter-spacing="3">
+              <text x="120" y="9" text-anchor="middle">ᛃᚢᛚᛁᛖᚾ</text>
+              <text x="120" y="237" text-anchor="middle">ᛒᚲᚱᛖᚹ</text>
+            </g>
+          </svg>
+        </div>
+        <span class="corvo c1"><Corvo width="40" height="30" /></span>
+        <span class="corvo c2"><Corvo width="28" height="21" /></span>
+        <figcaption class="maquina">huginn · muninn — pensamento e memória, os dois corvos que voam na frente</figcaption>
+      </figure>
+    </div>
+    <div class="container">
+      <dl class="numeros maquina entrar" style="--d:.7s" data-contar>
+        {numeros.map((n) => <div><dt>{n.valor}</dt><dd>{n.rotulo}</dd></div>)}
+      </dl>
+    </div>
+  </section>
+
+  <hr class="no-nordico" />
+
+  <section id="projetos" class="projetos">
+    <div class="container">
+      <p class="rotulo"><span class="runa">ᚢ</span> a tripulação</p>
+      <h2 class="secao-titulo">Cinco barcos, cada um com <em>seu mascote</em></h2>
+      <p class="secao-sub">
+        Cada ficha abre um estudo de caso: o problema, o fluxo com os carimbos humanos, os princípios, a stack e o roadmap.
+        O código é privado; a arquitetura e as decisões, não.
+      </p>
+      <div class="grade">
+        {projetos.map((p, i) => <CardProjeto projeto={p} indice={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section id="ecossistema" class="ecossistema">
+    <div class="container">
+      <p class="rotulo"><span class="runa">ᚦ</span> topologia</p>
+      <h2 class="secao-titulo">Os produtos <em>conversam entre si</em></h2>
+      <p class="secao-sub">
+        O BeeRelay virou o gateway de WhatsApp dos outros produtos, e o FoxSteward governa como todos eles são construídos.
+      </p>
+      <pre class="diagrama maquina revelar"><code>WhatsApp ⇄ Meta Cloud API ⇄ <b>BeeRelay</b> (gateway multi-tenant) ⇄ <b>BeeFinance</b>
+                                      │
+                                      └─ outros tenants…
+
+<b>FoxSteward</b> ──governa──▶ Hermes · Precedentia · BeeRelay · BeeFinance
+             specs · issues · gates de CI · evidências</code></pre>
+    </div>
+  </section>
+
+  <section id="linha" class="linha papel">
+    <div class="container">
+      <p class="rotulo"><span class="runa">ᚨ</span> saga</p>
+      <h2 class="secao-titulo">De um chatbot no Slack a <em>uma equipe de agentes</em></h2>
+      <ol class="tempo revelar">
+        {trajetoria.map((t) => (
+          <li class="revelar">
+            <span class="ano maquina">{t.ano}</span>
+            <div>
+              <h3>{t.titulo}</h3>
+              <p class="humano">{t.texto}</p>
+              <span class="maquina etiqueta">{t.maquina}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="metodo" class="metodo">
+    <div class="container">
+      <p class="rotulo"><span class="runa">ᚱ</span> as runas</p>
+      <h2 class="secao-titulo">Quatro regras <em>gravadas na pedra</em></h2>
+      <p class="secao-sub">
+        Escrevo as specs e reviso os PRs. Os agentes implementam dentro de gates de qualidade. Para isso funcionar, estas
+        quatro regras valem em todo projeto.
+      </p>
+      <ol class="principios">
+        {principios.map((p, i) => (
+          <li class="revelar">
+            <span class="maquina"><span class="runa">{["ᚠ","ᚢ","ᚦ","ᚨ"][i]}</span> regra/0{i + 1}</span>
+            <h3>{p.titulo}</h3>
+            <p>{p.texto}</p>
+          </li>
+        ))}
+      </ol>
+      <div class="stack revelar">
+        {Object.entries(stack).map(([grupo, itens]) => (
+          <div>
+            <p class="rotulo">{grupo}</p>
+            <div class="chips">{itens.map((s) => <span class="chip">{s}</span>)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="contato" class="contato">
+    <div class="container contato-inner revelar">
+      <div>
+        <h2 class="secao-titulo">Quer subir <em>a bordo</em>?</h2>
+        <p class="secao-sub">Alguns projetos devem virar open source. Até lá, mostro demos e arquitetura numa conversa.</p>
+      </div>
+      <div class="hero-acoes">
+        {site.email && <a class="botao primario" href={`mailto:${site.email}`}>e-mail</a>}
+        {site.linkedin && <a class="botao primario" href={site.linkedin} target="_blank" rel="noopener">linkedin</a>}
+        <a class="botao" href={site.github} target="_blank" rel="noopener">github</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: clamp(56px, 9vw, 112px); }
+  .hero-grade { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr); gap: 40px; align-items: center; }
+  .hero-sub b { font-weight: 400; color: var(--vermelho); }
+  .retrato { margin: 0; position: relative; justify-self: center; width: min(360px, 100%); }
+  .moldura { position: relative; aspect-ratio: 1; }
+  .moldura :global(img) { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;
+    box-shadow: 0 24px 60px rgb(0 0 0 / .45);
+    /* a imagem já é uma xilogravura de 3 tons (gerada com ffmpeg a partir do retrato) */
+    image-rendering: auto; }
+  .moldura i { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+  /* tinta: puxa a imagem para a paleta (bronze na luz, ferro na sombra, sangue no canto) */
+  .tinta { background:
+    radial-gradient(70% 70% at 80% 95%, color-mix(in srgb, var(--vermelho) 55%, transparent), transparent 60%),
+    linear-gradient(145deg, #e3c48a 0%, #7a5a30 55%, #1a140f 100%);
+    mix-blend-mode: color; opacity: .35; }
+  /* hachuras diagonais como talho de xilogravura, só nas sombras */
+  .hachura { background: repeating-linear-gradient(135deg, rgb(0 0 0 / .32) 0 1px, transparent 1px 4px); mix-blend-mode: soft-light; opacity: .9; }
+  .grao { opacity: .22; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  .moldura::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--linha), inset 0 0 60px rgb(0 0 0 / .55); pointer-events: none; }
+  .anel { position: absolute; inset: -14px; width: calc(100% + 28px); height: calc(100% + 28px); pointer-events: none; }
+  .corvo { position: absolute; color: var(--ouro); }
+  .corvo.c1 { top: -8px; left: -12px; animation: voar 4.5s ease-in-out infinite; }
+  .corvo.c2 { top: 26px; right: -6px; animation: voar-espelho 5.5s ease-in-out infinite .8s; }
+  .anel { animation: girar 90s linear infinite; transform-origin: 50% 50%; }
+  .moldura :global(img) { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  .retrato:hover :global(img) { transform: scale(1.03); }
+  .retrato figcaption { margin-top: 12px; text-align: center; color: var(--texto-3); font-size: .7rem; }
+  @media (max-width: 860px) { .hero-grade { grid-template-columns: 1fr; } .retrato { width: min(260px, 70%); order: -1; } }
+  h1 { font-size: clamp(2.6rem, 7.2vw, 5.4rem); max-width: 18ch; margin: 20px 0 24px; }
+  h1 em { color: var(--vermelho); }
+  h1 .maquina { font-size: 0.62em; font-weight: 500; letter-spacing: -0.01em; background: var(--texto); color: var(--bg); padding: 0.06em 0.3em; border-radius: 4px; vertical-align: 0.1em; }
+  .hero-sub { font-size: clamp(1.3rem, 2.4vw, 1.7rem); color: var(--texto-2); max-width: 620px; margin: 0 0 32px; line-height: 1.4; }
+  .hero-acoes { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .numeros {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 56px 0 0; padding: 0;
+    border-top: 1px solid var(--texto); border-bottom: 1px solid var(--texto);
+  }
+  .numeros div { padding: 18px 16px 18px 0; border-right: 1px dashed var(--linha); }
+  .numeros div:last-child { border-right: 0; }
+  .numeros div + div { padding-left: 16px; }
+  .numeros dt { font-size: clamp(1.7rem, 3.5vw, 2.4rem); font-weight: 700; color: var(--texto); }
+  .numeros dd { margin: 2px 0 0; color: var(--texto-3); font-size: 0.74rem; }
+  @media (max-width: 720px) {
+    .numeros { grid-template-columns: repeat(2, 1fr); }
+    .numeros div:nth-child(2) { border-right: 0; }
+    .numeros div:nth-child(n + 3) { border-top: 1px dashed var(--linha); }
+    .numeros div:nth-child(3) { padding-left: 0; }
+  }
+
+  .grade { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .grade { grid-template-columns: 1fr; } }
+
+  .ecossistema { padding-top: 0; }
+  .diagrama {
+    margin: 0; padding: clamp(18px, 3vw, 32px); overflow-x: auto; font-size: 0.82rem; line-height: 1.7;
+    background: var(--bg-2); border: 1px solid var(--linha); border-radius: 6px; color: var(--texto-2);
+  }
+  .diagrama b { color: var(--vermelho); font-weight: 700; }
+
+  .tempo { list-style: none; margin: 0; padding: 0; max-width: 760px; position: relative; }
+  .tempo::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--texto);
+    transform: scaleY(0); transform-origin: top; transition: transform 1.6s cubic-bezier(.2,.8,.2,1); }
+  .tempo.visivel::before { transform: scaleY(1); }
+  .tempo li.visivel::before { transition-delay: .2s; }
+  .tempo li { display: grid; grid-template-columns: 96px 1fr; gap: 20px; padding: 0 0 40px 26px; position: relative; }
+  .tempo li:nth-child(2) { transition-delay: .25s } .tempo li:nth-child(3) { transition-delay: .5s } .tempo li:nth-child(4) { transition-delay: .75s }
+  .tempo li::before { content: ''; position: absolute; left: -5px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--texto); }
+  .tempo li:last-child::before { background: var(--vermelho); border-color: var(--vermelho); }
+  .tempo li:last-child { padding-bottom: 0; }
+  .ano { color: var(--texto-3); padding-top: 4px; }
+  .tempo h3 { font-size: 1.7rem; margin-bottom: 6px; }
+  .tempo p { margin: 0 0 10px; font-size: 1.2rem; color: var(--texto-2); }
+  .etiqueta { color: var(--texto-3); }
+  @media (max-width: 560px) { .tempo li { grid-template-columns: 1fr; gap: 4px; } }
+
+  .metodo { background: var(--bg-2); border-block: 1px solid var(--linha); }
+  .principios { list-style: none; padding: 0; margin: 0 0 56px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .principios li:nth-child(2) { transition-delay: .12s } .principios li:nth-child(3) { transition-delay: .24s } .principios li:nth-child(4) { transition-delay: .36s }
+  .principios li { padding: 22px; border: 1px solid var(--linha); border-radius: 6px; background: var(--bg); }
+  .principios .maquina { color: var(--vermelho); }
+  .principios h3 { font-size: 1.5rem; margin: 10px 0 8px; }
+  .principios p { margin: 0; color: var(--texto-2); font-size: 0.92rem; }
+  @media (max-width: 960px) { .principios { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .principios { grid-template-columns: 1fr; } }
+  .stack { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .stack .rotulo { margin: 0 0 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  @media (max-width: 860px) { .stack { grid-template-columns: repeat(2, 1fr); } }
+
+  .contato-inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .contato .secao-sub { margin-bottom: 0; }
+</style>

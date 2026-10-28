@@ -1,0 +1,71 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Visibilidade from './Visibilidade.astro';
+
+interface Props {
+  projeto: CollectionEntry<'projetos'>;
+  indice: number;
+}
+
+const { projeto, indice } = Astro.props;
+const p = projeto.data;
+const href = `${import.meta.env.BASE_URL}projetos/${projeto.id}/`;
+const numero = String(indice + 1).padStart(2, '0');
+---
+
+<a class="ficha revelar" href={href} style={`--cor: ${p.cor}`}>
+  <div class="ficha-cabeca">
+    <span class="maquina num">spec/{numero}</span>
+    <Visibilidade tipo={p.visibilidade} repo={p.repo} />
+  </div>
+  <div class="ficha-corpo">
+    <div class="mascote">
+      {p.mascote && <Image src={p.mascote} alt="" width={160} height={160} />}
+    </div>
+    <div>
+      <p class="rotulo">{p.categoria}</p>
+      <h3>{p.nome}</h3>
+      <p class="humano fala">“{p.mascoteFala ?? p.slogan}”</p>
+      <p class="resumo">{p.resumo}</p>
+    </div>
+  </div>
+  <div class="ficha-rodape maquina">
+    <span><i></i>{p.status}</span>
+    <span class="ver">abrir estudo de caso →</span>
+  </div>
+</a>
+
+<style>
+  .ficha {
+    display: flex; flex-direction: column; text-decoration: none;
+    background: var(--bg-2); border: 1px solid var(--linha); border-radius: 6px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+  }
+  .ficha::before {
+    /* furos de fichário */
+    content: ''; position: absolute; left: 14px; top: 50%; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--linha); transform: translateY(-50%);
+  }
+  .ficha:hover { transform: translateY(-3px) rotate(-0.3deg); box-shadow: var(--sombra); }
+  .ficha-cabeca { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 12px 32px; border-bottom: 1px dashed var(--linha); }
+  .num { color: var(--texto-3); }
+  .ficha-corpo { display: grid; grid-template-columns: 112px 1fr; gap: 20px; padding: 22px 22px 18px 32px; flex: 1; }
+  .mascote {
+    width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
+    background: color-mix(in srgb, var(--cor) 16%, var(--bg-3)); border: 1px solid color-mix(in srgb, var(--cor) 35%, var(--linha));
+  }
+  .mascote :global(img) { width: 80%; height: 80%; object-fit: contain; }
+  h3 { font-size: 2.1rem; margin: 2px 0 4px; }
+  .fala { font-size: 1.2rem; color: var(--vermelho); margin: 0 0 10px; }
+  .resumo { color: var(--texto-2); margin: 0; font-size: 0.93rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .ficha-rodape { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 16px 14px 32px; border-top: 1px dashed var(--linha); color: var(--texto-2); }
+  .ficha-rodape span:first-child { display: inline-flex; align-items: center; gap: 8px; }
+  .ficha-rodape i { width: 8px; height: 8px; border-radius: 50%; background: var(--cor); }
+  .ver { color: var(--texto); }
+  @media (max-width: 560px) {
+    .ficha-corpo { grid-template-columns: 1fr; }
+    .mascote { width: 88px; height: 88px; }
+  }
+</style>

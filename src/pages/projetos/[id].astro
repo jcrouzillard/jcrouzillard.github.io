@@ -1,0 +1,237 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Visibilidade from '../../components/Visibilidade.astro';
+import Carimbo from '../../components/Carimbo.astro';
+
+export async function getStaticPaths() {
+  const projetos = (await getCollection('projetos')).sort((a, b) => a.data.ordem - b.data.ordem);
+  return projetos.map((projeto, i) => ({
+    params: { id: projeto.id },
+    props: { projeto, proximo: projetos[(i + 1) % projetos.length], numero: String(i + 1).padStart(2, '0') },
+  }));
+}
+
+interface Props {
+  projeto: CollectionEntry<'projetos'>;
+  proximo: CollectionEntry<'projetos'>;
+  numero: string;
+}
+
+const { projeto, proximo, numero } = Astro.props;
+const p = projeto.data;
+const { Content } = await render(projeto);
+const base = import.meta.env.BASE_URL;
+const statusFase = { feito: 'concluído', agora: 'em andamento', depois: 'próximo' };
+---
+
+<Base titulo={p.nome} descricao={p.resumo}>
+  <article style={`--cor: ${p.cor}`}>
+    <header class="cabeca papel">
+      <div class="container">
+        <a class="voltar maquina" href={`${base}#projetos`}>← fichário</a>
+        <div class="titulo-linha entrar" style="--d:.1s">
+          <div class="mascote">
+            {p.mascote && <Image src={p.mascote} alt="" width={200} height={200} />}
+          </div>
+          <div>
+            <p class="rotulo"><b>spec/{numero}</b> · {p.categoria} · desde {p.desde}</p>
+            <h1>{p.nome}</h1>
+            <p class="fala humano">“{p.mascoteFala ?? p.slogan}”</p>
+          </div>
+        </div>
+        <p class="resumo entrar" style="--d:.25s">{p.resumo}</p>
+        <div class="selos entrar" style="--d:.35s">
+          <Visibilidade tipo={p.visibilidade} repo={p.repo} />
+          <span class="selo"><i class="ponto"></i>{p.status}</span>
+        </div>
+        {
+          p.metricas.length > 0 && (
+            <dl class="metricas maquina entrar" style="--d:.4s" data-contar>
+              {p.metricas.map((m) => <div><dt>{m.valor}</dt><dd>{m.rotulo}</dd></div>)}
+            </dl>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      p.capa && (
+        <div class="container capa revelar">
+          <Image src={p.capa} alt={`Tela do ${p.nome}`} widths={[640, 1100, 1600]} sizes="(max-width: 1120px) 100vw, 1120px" loading="eager" />
+        </div>
+      )
+    }
+
+    <section class="bloco">
+      <div class="container grade-texto">
+        <div class="prosa">
+          <Content />
+        </div>
+        <aside class="lateral">
+          <div class="caixa">
+            <p class="rotulo">stack</p>
+            <div class="chips">{p.stack.map((s) => <span class="chip">{s}</span>)}</div>
+          </div>
+          {
+            p.principios.length > 0 && (
+              <div class="caixa">
+                <p class="rotulo">princípios</p>
+                <ul class="lista humano">{p.principios.map((x) => <li>{x}</li>)}</ul>
+              </div>
+            )
+          }
+        </aside>
+      </div>
+    </section>
+
+    {
+      p.fluxo.length > 0 && (
+        <section class="bloco fundo">
+          <div class="container">
+            <p class="rotulo"><b>#</b> fluxo</p>
+            <h2 class="secao-titulo">Passo a passo, <em>com os carimbos</em></h2>
+            <p class="secao-sub">Onde há carimbo, uma pessoa decidiu. O resto é a máquina fazendo o que a spec manda.</p>
+            <ol class="fluxo">
+              {p.fluxo.map((f, i) => (
+                <li class:list={['revelar', { humano: f.humano }]} style={`transition-delay:${i * 60}ms`}>
+                  <span class="maquina">{String(i + 1).padStart(2, '0')}</span>
+                  <strong class:list={{ humano: f.humano }}>{f.titulo}</strong>
+                  <span>{f.detalhe}</span>
+                  {f.humano && <span class="carimbo-pos"><Carimbo pequeno rotacao={i % 2 ? 5 : -7} /></span>}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      p.fases.length > 0 && (
+        <section class="bloco">
+          <div class="container">
+            <p class="rotulo"><b>#</b> roadmap</p>
+            <h2 class="secao-titulo">Onde <em>está agora</em></h2>
+            <ol class="fases">
+              {p.fases.map((f) => (
+                <li class:list={['revelar', f.status]}>
+                  <i />
+                  <span>{f.nome}</span>
+                  <span class="maquina">{statusFase[f.status]}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      p.galeria.length > 0 && (
+        <section class="bloco fundo">
+          <div class="container">
+            <p class="rotulo"><b>#</b> galeria</p>
+            <h2 class="secao-titulo">Por <em>dentro</em></h2>
+            <div class="galeria">
+              {p.galeria.map((g) => (
+                <figure class="revelar">
+                  <Image src={g.src} alt={g.legenda} widths={[480, 900]} sizes="(max-width: 800px) 100vw, 540px" />
+                  <figcaption class="humano">{g.legenda}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="proximo container" style={`--cor-prox: ${proximo.data.cor}`}>
+      <a href={`${base}projetos/${proximo.id}/`}>
+        <span class="rotulo">próxima ficha</span>
+        <strong>{proximo.data.nome} →</strong>
+        <span class="humano">{proximo.data.slogan}</span>
+      </a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .cabeca { padding-top: clamp(40px, 7vw, 80px); padding-bottom: 48px; }
+  .voltar { color: var(--texto-3); text-decoration: none; }
+  .voltar:hover { color: var(--vermelho); }
+  .titulo-linha { display: flex; align-items: center; gap: 28px; margin-top: 32px; }
+  .mascote { transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+  .mascote:hover { transform: rotate(-4deg) scale(1.04); }
+  .mascote {
+    flex: none; width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
+    background: color-mix(in srgb, var(--cor) 16%, var(--bg-3)); border: 1px solid color-mix(in srgb, var(--cor) 35%, var(--linha));
+  }
+  .mascote :global(img) { width: 80%; height: 80%; object-fit: contain; }
+  h1 { font-size: clamp(3rem, 9vw, 6rem); }
+  .fala { font-size: clamp(1.25rem, 3vw, 1.7rem); color: var(--vermelho); margin: 6px 0 0; }
+  .resumo { color: var(--texto-2); max-width: 720px; font-size: 1.08rem; margin: 24px 0; }
+  .selos { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ponto { width: 7px; height: 7px; border-radius: 50%; background: var(--cor); }
+  .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin: 40px 0 0; padding: 0; border-top: 1px solid var(--texto); border-bottom: 1px solid var(--texto); }
+  .metricas div { padding: 16px 16px 16px 0; border-right: 1px dashed var(--linha); }
+  .metricas div + div { padding-left: 16px; }
+  .metricas div:last-child { border-right: 0; }
+  .metricas dt { font-size: 1.8rem; font-weight: 700; color: color-mix(in srgb, var(--cor) var(--mix), var(--texto)); }
+  .metricas dd { margin: 0; color: var(--texto-3); font-size: 0.74rem; }
+  @media (max-width: 560px) { .titulo-linha { flex-direction: column; align-items: flex-start; gap: 16px; } .mascote { width: 104px; height: 104px; } }
+
+  .capa { margin-top: 8px; }
+  .capa :global(img) { width: 100%; border-radius: 6px; border: 1px solid var(--linha); box-shadow: var(--sombra); }
+
+  .bloco { padding-block: clamp(48px, 8vw, 96px); }
+  .fundo { background: var(--bg-2); border-block: 1px solid var(--linha); }
+  .grade-texto { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 56px; align-items: start; }
+  @media (max-width: 900px) { .grade-texto { grid-template-columns: 1fr; gap: 32px; } }
+  .prosa { max-width: 680px; }
+  .prosa :global(h2) { font-size: 2.1rem; margin: 40px 0 12px; }
+  .prosa :global(h2:first-child) { margin-top: 0; }
+  .prosa :global(p), .prosa :global(li) { color: var(--texto-2); font-size: 1.04rem; }
+  .prosa :global(strong) { color: var(--texto); font-weight: 600; }
+  .prosa :global(code) { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: var(--bg-3); padding: 2px 6px; border-radius: 4px; }
+  .prosa :global(ul) { padding-left: 1.2em; }
+  .prosa :global(li) { margin-bottom: 8px; }
+  .lateral { display: grid; gap: 16px; position: sticky; top: 84px; }
+  @media (max-width: 900px) { .lateral { position: static; } }
+  .caixa { background: var(--bg-2); border: 1px solid var(--linha); border-radius: 6px; padding: 20px; }
+  .caixa .rotulo { margin: 0 0 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; font-size: 1.15rem; line-height: 1.35; }
+  .lista li { color: var(--texto-2); padding-left: 16px; position: relative; }
+  .lista li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 1px; background: var(--cor); }
+
+  .fluxo { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .fluxo li { display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 6px; background: var(--bg); border: 1px solid var(--linha); position: relative; }
+  .fluxo li .maquina { color: var(--texto-3); }
+  .fluxo li strong { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 1.35rem; line-height: 1.1; }
+  .fluxo li strong.humano { color: var(--vermelho); }
+  .fluxo li span:nth-child(3) { color: var(--texto-2); font-size: 0.88rem; }
+  .fluxo li.humano { border-color: color-mix(in srgb, var(--vermelho) 50%, var(--linha)); padding-bottom: 44px; }
+  .carimbo-pos { position: absolute; right: 12px; bottom: 12px; }
+
+  .fases { list-style: none; padding: 0; margin: 0; max-width: 760px; }
+  .fases li { display: grid; grid-template-columns: 20px 1fr auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px dashed var(--linha); font-size: 1.05rem; }
+  .fases li i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--texto-3); }
+  .fases li.feito i { background: color-mix(in srgb, var(--cor) var(--mix), var(--texto)); border-color: transparent; }
+  .fases li.agora i { border-color: var(--vermelho); animation: pulsar 2.4s ease-in-out infinite; }
+  .fases li.depois span:nth-child(2) { color: var(--texto-3); }
+  .fases li .maquina { color: var(--texto-3); }
+  .fases li.agora .maquina { color: var(--vermelho); }
+
+  .galeria { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .galeria figure { margin: 0; }
+  .galeria :global(img) { border-radius: 6px; border: 1px solid var(--linha); width: 100%; }
+  .galeria figcaption { color: var(--texto-2); font-size: 1.1rem; margin-top: 10px; }
+
+  .proximo { padding-block: 64px; }
+  .proximo a { display: grid; gap: 4px; padding: 32px; border-radius: 6px; text-decoration: none; border: 1px solid var(--linha); background: var(--bg-2); transition: border-color 0.25s ease; }
+  .proximo a:hover { border-color: var(--vermelho); }
+  .proximo strong { font: 400 clamp(2rem, 5vw, 3rem) 'Instrument Serif', serif; color: var(--texto); }
+  .proximo .humano { color: var(--texto-2); font-size: 1.2rem; }
+</style>

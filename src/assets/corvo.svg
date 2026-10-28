@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48">
+  <!-- Corvo de Odin: Huginn (pensamento) e Muninn (memória). Os agentes são os corvos do Jarl. -->
+  <path d="M4 30c8-10 18-14 28-12 6-8 14-10 22-6l6 2-5 3c2 4 1 9-2 12-6 7-16 9-26 7l-6 8-2-9C13 34 8 33 4 30Z" fill="currentColor"/>
+  <circle cx="47" cy="19" r="1.4" fill="#c9a24a"/>
+</svg>

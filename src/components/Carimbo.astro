@@ -1,0 +1,36 @@
+---
+// Carimbo de aprovação humana: a assinatura visual de "humano no circuito".
+interface Props {
+  texto?: string;
+  quem?: string;
+  pequeno?: boolean;
+  rotacao?: number;
+}
+const { texto = 'Aprovado', quem = 'Julien', pequeno = false, rotacao = -6 } = Astro.props;
+---
+
+<span class:list={['carimbo', { pequeno }]} style={`--rot:${rotacao}deg`} aria-label={`${texto} por ${quem}`}>
+  <span class="carimbo-texto">{texto}</span>
+  <span class="carimbo-quem">· {quem}</span>
+</span>
+
+<style>
+  .carimbo {
+    display: inline-flex; align-items: baseline; gap: 4px;
+    padding: 4px 10px 3px; border: 2px solid var(--tinta); border-radius: 4px;
+    color: var(--tinta); transform: rotate(var(--rot));
+    font: 700 0.78rem/1 'JetBrains Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase;
+    position: relative; white-space: nowrap;
+    /* tinta irregular */
+    -webkit-mask-image: radial-gradient(circle at 20% 30%, #000 60%, transparent 61%), radial-gradient(circle at 80% 70%, #000 60%, transparent 61%), linear-gradient(#000, #000);
+    -webkit-mask-composite: source-over;
+    mask-image: linear-gradient(#000, #000);
+    opacity: 0.92;
+  }
+  .carimbo::after {
+    content: ''; position: absolute; inset: 2px; border: 1px solid var(--tinta); border-radius: 2px; opacity: 0.5;
+  }
+  .carimbo-quem { font-weight: 400; letter-spacing: 0.04em; font-family: 'Instrument Serif', serif; font-style: italic; text-transform: none; font-size: 0.95rem; }
+  .pequeno { font-size: 0.62rem; padding: 3px 7px 2px; }
+  .pequeno .carimbo-quem { font-size: 0.8rem; }
+</style>
