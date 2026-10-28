@@ -42,7 +42,16 @@ const base = import.meta.env.BASE_URL;
   <body>
     <header class="topo">
       <div class="container topo-inner">
-        <a href={base} class="marca"><span class="marca-sigla runa">ᛃ</span><span class="humano">{site.nome}</span></a>
+        <div class="marca-grupo">
+          <a href={base} class="marca"><span class="marca-sigla runa">ᛃ</span><span class="humano">{site.nome}</span></a>
+          <a
+            class="selo-versao"
+            href={versao.url || undefined}
+            target="_blank"
+            rel="noopener"
+            title={versao.hash ? `versão publicada · commit ${versao.hash}` : 'versão publicada'}
+          ><span class="runa" aria-hidden="true">ᚱ</span>{versao.nome}</a>
+        </div>
         <nav>
           <a href={`${base}#projetos`}>projetos</a>
           <a class="so-largo" href={`${base}#linha`}>trajetória</a>
@@ -267,7 +276,20 @@ const base = import.meta.env.BASE_URL;
   .rodape-links { display: flex; gap: 16px; flex-wrap: wrap; }
   .rodape-links a { color: var(--texto-2); }
   .rodape-links a:hover { color: var(--vermelho); }
-  .rodape .versao { color: var(--texto-3); }
+  /* selo de versão: plaquinha de bronze ao lado do nome, como marca gravada no casco */
+  .marca-grupo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .selo-versao {
+    display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px 2px 6px;
+    border: 1px solid color-mix(in srgb, var(--ouro) 60%, transparent); border-radius: 3px;
+    background: color-mix(in srgb, var(--ouro) 10%, var(--bg-2)); color: var(--ouro);
+    font: 500 0.66rem 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+    text-decoration: none; white-space: nowrap; transition: border-color .2s, color .2s;
+  }
+  .selo-versao .runa { font-size: 0.8rem; line-height: 1; }
+  .selo-versao:hover { border-color: var(--vermelho); color: var(--vermelho); }
+  /* no celular o selo do topo some e a versão aparece no rodapé */
+  .rodape .versao { display: none; color: var(--texto-3); }
+  @media (max-width: 720px) { .selo-versao { display: none; } .rodape .versao { display: inline; } }
   .rodape .versao a { color: var(--texto-3); text-decoration-style: dotted; }
 
   .selo {
