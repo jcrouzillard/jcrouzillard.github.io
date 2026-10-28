@@ -50,7 +50,8 @@ const base = import.meta.env.BASE_URL;
             target="_blank"
             rel="noopener"
             title={versao.hash ? `versão publicada · commit ${versao.hash}` : 'versão publicada'}
-          ><span class="runa" aria-hidden="true">ᚱ</span>{versao.nome}</a>
+            aria-label={`versão ${versao.nome}`}
+          ><span class="runa" aria-hidden="true">ᚱ</span><span class="selo-versao-nome">{versao.nome}</span></a>
         </div>
         <nav>
           <a href={`${base}#projetos`}>projetos</a>
@@ -287,9 +288,15 @@ const base = import.meta.env.BASE_URL;
   }
   .selo-versao .runa { font-size: 0.8rem; line-height: 1; }
   .selo-versao:hover { border-color: var(--vermelho); color: var(--vermelho); }
-  /* no celular o selo do topo some e a versão aparece no rodapé */
+  /* no celular o selo do topo vira só a runa e a versão por extenso aparece no rodapé */
   .rodape .versao { display: none; color: var(--texto-3); }
-  @media (max-width: 720px) { .selo-versao { display: none; } .rodape .versao { display: inline; } }
+  @media (max-width: 720px) {
+    .marca-grupo { gap: 8px; }
+    .selo-versao { padding: 3px 6px; }
+    .selo-versao-nome { display: none; }
+    .selo-versao .runa { font-size: 0.85rem; }
+    .rodape .versao { display: inline; }
+  }
   .rodape .versao a { color: var(--texto-3); text-decoration-style: dotted; }
 
   .selo {
