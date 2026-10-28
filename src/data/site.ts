@@ -41,5 +41,5 @@ export const trajetoria = [
   { ano: '2017–21', titulo: 'Full stack, faculdade e o primeiro bot', texto: 'Aplicações web para banco e varejo (Prime IT, CIDIC, Riachuelo), Gestão de Sistemas de Informação na FIAP e um chatbot no Slack por diversão.', maquina: 'java · javascript · angular · react · hubot' },
   { ano: '2021–25', titulo: 'Escala de verdade', texto: 'No Mercado Livre, e-commerce, pagamentos e backoffice de alto volume: arquitetura orientada a eventos, decisões de arquitetura e incidentes resolvidos com observabilidade.', maquina: 'java · quarkus · go · kafka · debezium · k8s · datadog' },
   { ano: '2025–', titulo: 'Engenharia de Plataforma', texto: 'No Bradesco, avalio, proponho e evoluo tecnologias e ferramentas internas para os times de desenvolvimento, com IA aplicada à produtividade e à developer experience.', maquina: 'plataforma · devex · ia aplicada' },
-  { ano: '2026', titulo: 'A oficina de agentes', texto: 'Fora do expediente, quatro produtos em paralelo, cerca de 900 PRs no ano, cada um com sua equipe de agentes e um carimbo humano no fim.', maquina: 'claude code · mcp · gcp · opentofu' },
+  { ano: '2026', titulo: 'A oficina de agentes', texto: 'Fora do expediente, quatro produtos em paralelo, mais de 890 PRs no ano, cada um com sua equipe de agentes e um carimbo humano no fim.', maquina: 'claude code · mcp · gcp · opentofu' },
 ];
