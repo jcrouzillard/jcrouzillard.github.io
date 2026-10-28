@@ -13,9 +13,9 @@ export const curriculo = {
   pdf: 'julien-crouzillard-curriculo.pdf',
 
   resumo: [
-    'Engenheiro backend sênior com mais de 20 anos em tecnologia e mais de 12 anos dedicados ao desenvolvimento de software para meios de pagamento, sistemas bancários, plataformas financeiras, e-commerce de alto volume e aplicações de alta criticidade.',
-    'Atualmente em Engenharia de Plataforma no Bradesco, avaliando, propondo e evoluindo tecnologias, ambientes e produtos internos usados pelos times de desenvolvimento, com forte uso de Inteligência Artificial aplicada a automação, produtividade e developer experience.',
-    'Experiência em microsserviços, arquitetura orientada a eventos, integrações corporativas, observabilidade, troubleshooting e sustentação de sistemas de alto volume, em colaboração com times de arquitetura, infraestrutura, segurança, produto e QA.',
+    'Engenheiro backend sênior com mais de 20 anos em tecnologia e, desde 2009, em sistemas críticos de pagamento, banco e e-commerce de alto volume (Bradesco, Mercado Livre), com Java, Go, microsserviços e arquitetura orientada a eventos com Kafka.',
+    'Hoje em Engenharia de Plataforma no Bradesco, com IA aplicada a automação, produtividade e developer experience. Fora do expediente, construo produtos próprios com squads de agentes de IA, um deles em produção na GCP.',
+    'Busco posições de engenheiro sênior ou staff em backend, plataforma ou IA aplicada.',
   ],
 
   experiencia: [
@@ -86,7 +86,7 @@ export const curriculo = {
   ],
 
   projetos: {
-    resumo: 'Produtos próprios com IA (2026), construídos com especificações versionadas e squads de agentes (Claude Code), com aprovação humana e evidência em cada PR. Estudos de caso em jcrouzillard.github.io.',
+    resumo: 'Produtos próprios com IA (2026), feitos com specs versionadas e squads de agentes (Claude Code), com aprovação humana em cada PR. Estudos de caso no portfólio.',
     itens: [
       'BeeRelay: CRM de marketing e gateway multi-tenant de WhatsApp em produção na GCP, com IA na criação, aprovação humana obrigatória e envio pela API oficial.',
       'Precedentia: motor verificável de precedentes jurídicos em Go e pgvector, em que toda resposta aponta para a decisão e a fonte oficial.',
@@ -107,5 +107,8 @@ export const curriculo = {
     ['Plataforma', 'Engenharia de Plataforma, Developer Experience, ferramentas internas'],
   ],
 
-  formacao: [{ curso: 'Tecnólogo em Gestão de Sistemas de Informação', instituicao: 'FIAP', periodo: 'concluído em 2018' }],
+  formacao: [
+    { curso: 'Tecnólogo em Gestão de Sistemas de Informação', instituicao: 'FIAP', periodo: 'concluído em 2018' },
+    { curso: 'Graduação em Sistemas de Informação', instituicao: 'Senac', periodo: 'concluída' },
+  ],
 };
