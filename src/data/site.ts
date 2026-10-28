@@ -34,12 +34,13 @@ export const principios = [
   },
 ];
 
-// Linha do tempo: dos autorizadores de pagamento ao maestro de squads de agentes (fonte: currículo 2026)
+// Linha do tempo: dos primeiros sites ao maestro de squads de agentes (fonte: currículo 2026)
 export const trajetoria = [
+  { ano: '2003–09', titulo: 'Os primeiros sites', texto: 'Mais de 40 sites para pequenas empresas e artistas, portais em PHP para um projeto educacional e para a Unifesp. Foi ali que virei programador.', maquina: 'php · mysql · javascript · flash' },
   { ano: '2009–11', titulo: 'Começo no coração dos pagamentos', texto: 'Na 2RP, Java Web para o Bradesco: autorizador de meios de pagamento, conciliação, antifraude e lista restritiva.', maquina: 'java web · awb · pdc' },
   { ano: '2011–17', titulo: 'O banco por dentro', texto: 'Prime IT e Foursys: abertura de contas, terminal financeiro, intranet e integrações com mainframe. De analista a líder técnico do time.', maquina: 'java · spring · jsf · struts · websphere' },
   { ano: '2017–21', titulo: 'Full stack, faculdade e o primeiro bot', texto: 'Aplicações web para banco e varejo (Prime IT, CIDIC, Riachuelo), Gestão de Sistemas de Informação na FIAP e um chatbot no Slack por diversão.', maquina: 'java · javascript · angular · react · hubot' },
-  { ano: '2021–25', titulo: 'Escala de verdade', texto: 'No Mercado Livre, e-commerce, pagamentos e backoffice de alto volume: arquitetura orientada a eventos, decisões de arquitetura e incidentes resolvidos com observabilidade.', maquina: 'java · quarkus · go · kafka · debezium · k8s · datadog' },
-  { ano: '2025–', titulo: 'Engenharia de Plataforma', texto: 'No Bradesco, avalio, proponho e evoluo tecnologias e ferramentas internas para os times de desenvolvimento, com IA aplicada à produtividade e à developer experience.', maquina: 'plataforma · devex · ia aplicada' },
-  { ano: '2026', titulo: 'A oficina de agentes', texto: 'Fora do expediente, quatro produtos em paralelo, mais de 890 PRs no ano, cada um com sua equipe de agentes e um carimbo humano no fim.', maquina: 'claude code · mcp · gcp · opentofu' },
+  { ano: '2021–25', titulo: 'Escala de verdade', texto: 'No Mercado Livre, o carrinho com split payment e o core de pagamentos do Mercado Livre e do Mercado Pago: volume, latência e incidentes, com arquitetura orientada a eventos e observabilidade.', maquina: 'java · quarkus · go · kafka · debezium · k8s · datadog' },
+  { ano: '2025–', titulo: 'Engenharia de Plataforma', texto: 'No Bradesco, no time que traz inovação e define as stacks e a forma de desenvolver de todos os devs do banco, internos e terceiros, com IA aplicada à developer experience.', maquina: 'plataforma · devex · ia aplicada' },
+  { ano: '2026', titulo: 'A oficina de agentes', texto: 'Fora do expediente, quatro produtos em paralelo, mais de 900 PRs no ano, cada um com sua equipe de agentes e um carimbo humano no fim.', maquina: 'claude code · mcp · gcp · opentofu' },
 ];
