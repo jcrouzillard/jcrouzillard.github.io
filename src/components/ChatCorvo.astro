@@ -262,7 +262,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
     position: absolute; right: 0; bottom: calc(100% + 12px);
     width: min(380px, calc(100vw - 32px)); height: min(560px, calc(100dvh - 120px));
     display: flex; flex-direction: column;
-    background: var(--bg-2); color: var(--texto); border: 1px solid var(--linha); border-radius: 10px;
+    background: var(--bg-2); color: var(--texto); border: 1px solid var(--linha); border-radius: 4px;
     box-shadow: var(--sombra); overflow: hidden;
     animation: subir .25s cubic-bezier(.2,.8,.2,1) both;
   }
@@ -279,10 +279,22 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
   }
 
   /* :global porque as mensagens novas nascem no script, sem o atributo de escopo do Astro */
-  .corvo-mensagens { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 14px; list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .corvo-mensagens :global(.corvo-msg) { max-width: 88%; padding: 9px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .corvo-mensagens :global(.corvo-msg-corvo) { align-self: flex-start; background: var(--bg); border: 1px solid var(--linha); border-top-left-radius: 2px; }
-  .corvo-mensagens :global(.corvo-msg-usuario) { align-self: flex-end; background: var(--vermelho); color: #fff; border-top-right-radius: 2px; }
+  /* as duas vozes do site: o corvo fala em serifa, como gente; o visitante registra em mono, como a máquina */
+  .corvo-mensagens {
+    flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 16px 14px; list-style: none;
+    display: flex; flex-direction: column; gap: 12px;
+    background-image: repeating-linear-gradient(to bottom, transparent 0 27px, color-mix(in srgb, var(--linha) 45%, transparent) 27px 28px);
+  }
+  .corvo-mensagens :global(.corvo-msg) { max-width: 90%; padding: 8px 12px; border-radius: 3px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .corvo-mensagens :global(.corvo-msg-corvo) {
+    align-self: flex-start; background: var(--bg); border: 1px solid var(--linha); border-left: 2px solid var(--ouro);
+    font: 400 1.14rem/1.38 'Instrument Serif', Georgia, serif; letter-spacing: 0.005em; color: var(--texto);
+  }
+  .corvo-mensagens :global(.corvo-msg-usuario) {
+    align-self: flex-end; background: color-mix(in srgb, var(--vermelho) 10%, var(--bg-2));
+    border: 1px solid color-mix(in srgb, var(--vermelho) 45%, transparent); border-right: 2px solid var(--vermelho);
+    font: 400 0.8rem/1.55 'JetBrains Mono', ui-monospace, monospace; color: var(--texto);
+  }
   .corvo-mensagens :global(.corvo-msg.pensando) { display: flex; align-items: flex-end; gap: 6px; padding: 8px 12px 9px; color: var(--ouro); }
   /* o corvinho anda de um lado para o outro, dando pulinhos, enquanto pensa */
   .corvo-mensagens :global(.corvo-trilha) { display: inline-flex; width: 50px; }
@@ -309,12 +321,13 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
 
   .corvo-form { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--linha); }
   .corvo-form input {
-    flex: 1; min-width: 0; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--linha);
-    background: var(--bg); color: var(--texto); font: 400 16px Inter, system-ui, sans-serif; /* 16px evita zoom no iPhone */
+    flex: 1; min-width: 0; padding: 10px 12px; border-radius: 3px; border: 1px solid var(--linha);
+    background: var(--bg); color: var(--texto); font: 400 16px 'JetBrains Mono', ui-monospace, monospace; /* 16px evita zoom no iPhone */
   }
+  .corvo-form input::placeholder { font: italic 400 1.1rem 'Instrument Serif', Georgia, serif; color: var(--texto-3); }
   .corvo-form input:focus { outline: 2px solid color-mix(in srgb, var(--vermelho) 60%, transparent); outline-offset: 1px; }
   .corvo-enviar {
-    width: 42px; border-radius: 6px; border: 0; background: var(--vermelho); color: #fff; cursor: pointer;
+    width: 42px; border-radius: 3px; border: 0; background: var(--vermelho); color: #fff; cursor: pointer;
     font-family: 'Noto Sans Runic', serif; font-size: 1.1rem;
   }
   .corvo-form.ocupado .corvo-enviar { opacity: .5; cursor: wait; }
