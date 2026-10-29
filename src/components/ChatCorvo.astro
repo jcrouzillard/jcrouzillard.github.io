@@ -48,7 +48,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
       <form class="corvo-form" data-corvo-form>
         <label class="sr" for="corvo-entrada">Sua pergunta</label>
         <input id="corvo-entrada" name="pergunta" maxlength="500" autocomplete="off" placeholder="Pergunte sobre o Julien…" required />
-        <button type="submit" class="corvo-enviar" aria-label="Enviar">ᛏ</button>
+        <button type="submit" class="corvo-enviar" aria-label="Enviar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
       </form>
       <div data-corvo-turnstile></div>
       <p class="corvo-rodape maquina">
@@ -286,10 +286,35 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
     background-image: repeating-linear-gradient(to bottom, transparent 0 27px, color-mix(in srgb, var(--linha) 45%, transparent) 27px 28px);
   }
   .corvo-mensagens :global(.corvo-msg) { max-width: 90%; padding: 8px 12px; border-radius: 3px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  /* a fala do corvo vem gravada numa pedra rúnica de granito claro, com a faixa vermelha da serpente */
   .corvo-mensagens :global(.corvo-msg-corvo) {
-    align-self: flex-start; background: var(--bg); border: 1px solid var(--linha); border-left: 2px solid var(--ouro);
-    font: 400 1.14rem/1.38 'Instrument Serif', Georgia, serif; letter-spacing: 0.005em; color: var(--texto);
+    position: relative; align-self: flex-start; padding: 18px 22px 16px;
+    border-radius: 34px 40px 12px 16px / 30px 34px 10px 14px;
+    /* um véu claro sobre a textura deixa a pedra visível nas bordas e calma atrás das letras */
+    background:
+      radial-gradient(ellipse 85% 75% at 50% 55%, rgb(236 231 222 / .62), rgb(236 231 222 / .18) 75%, transparent),
+      url('/chat/pedra.webp') 0 0 / 256px 256px, #c9c3b8;
+    box-shadow:
+      inset 2px 3px 6px rgb(255 255 255 / .45), inset -3px -5px 10px rgb(40 34 28 / .35),
+      0 3px 0 rgb(60 52 44 / .55), 0 6px 14px rgb(0 0 0 / .22);
+    font: 400 1.24rem/1.36 'Instrument Serif', Georgia, serif; letter-spacing: 0.012em; color: #17130f;
+    -webkit-text-stroke: 0.3px #17130f; /* a serifa é fina: um traço leve engrossa a letra sobre a pedra */
+    text-shadow: 0 1px 0 rgb(255 255 255 / .6); /* letra cavada: só o brilho embaixo */
   }
+  .corvo-mensagens :global(.corvo-msg-corvo)::before {
+    content: 'ᚺᚢᚴᛁᚾ ᛬ ᚱᛅᛁᛋᛏᛁ ᛬'; display: block; margin-bottom: 6px;
+    font: 400 .74rem 'Noto Sans Runic', serif; letter-spacing: .25em; color: #9a2a20; -webkit-text-stroke: 0;
+  }
+  /* a serpente: uma faixa pintada de vermelho, gasta pelo tempo, contornando a pedra por dentro */
+  .corvo-mensagens :global(.corvo-msg-corvo)::after {
+    content: ''; position: absolute; inset: 7px; pointer-events: none;
+    border: 2.5px solid rgb(160 40 30 / .72); border-radius: 28px 34px 7px 10px / 25px 29px 6px 9px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), 0 1px 0 rgb(255 255 255 / .35);
+    mix-blend-mode: multiply;
+  }
+  .corvo-mensagens :global(.corvo-msg-corvo a) { color: #8a1f17; }
+  .corvo-mensagens :global(.corvo-msg.corvo-msg-corvo.pensando) { padding: 18px 28px 15px; }
+  .corvo-mensagens :global(.corvo-msg-corvo.pensando)::before { content: none; }
   .corvo-mensagens :global(.corvo-msg-usuario) {
     align-self: flex-end; background: color-mix(in srgb, var(--vermelho) 10%, var(--bg-2));
     border: 1px solid color-mix(in srgb, var(--vermelho) 45%, transparent); border-right: 2px solid var(--vermelho);
@@ -319,17 +344,30 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
   .corvo-sugestoes .chip { cursor: pointer; text-align: left; }
   .corvo-sugestoes .chip:hover { border-color: var(--vermelho); color: var(--vermelho); }
 
-  .corvo-form { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--linha); }
+  /* a caixa de digitar e o botão formam uma barra só, com o botão redondo como um escudo */
+  .corvo-form {
+    display: flex; align-items: center; gap: 6px; margin: 10px 14px 8px; padding: 5px 5px 5px 14px;
+    background: var(--bg); border: 1px solid var(--linha); border-radius: 999px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .corvo-form:focus-within { border-color: var(--ouro); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ouro) 22%, transparent); }
   .corvo-form input {
-    flex: 1; min-width: 0; padding: 10px 12px; border-radius: 3px; border: 1px solid var(--linha);
-    background: var(--bg); color: var(--texto); font: 400 16px 'JetBrains Mono', ui-monospace, monospace; /* 16px evita zoom no iPhone */
+    flex: 1; min-width: 0; padding: 8px 0; border: 0; background: transparent; color: var(--texto);
+    font: 400 16px 'JetBrains Mono', ui-monospace, monospace; /* 16px evita zoom no iPhone */
   }
-  .corvo-form input::placeholder { font: italic 400 1.1rem 'Instrument Serif', Georgia, serif; color: var(--texto-3); }
-  .corvo-form input:focus { outline: 2px solid color-mix(in srgb, var(--vermelho) 60%, transparent); outline-offset: 1px; }
+  .corvo-form input:focus { outline: none; }
+  .corvo-form input::placeholder { font: italic 400 1.15rem 'Instrument Serif', Georgia, serif; color: var(--texto-3); }
   .corvo-enviar {
-    width: 42px; border-radius: 3px; border: 0; background: var(--vermelho); color: #fff; cursor: pointer;
-    font-family: 'Noto Sans Runic', serif; font-size: 1.1rem;
+    flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+    border-radius: 50%; border: 0; cursor: pointer; color: #fff;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--vermelho) 80%, #fff), var(--vermelho) 60%);
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ouro) 70%, transparent), 0 2px 4px rgb(0 0 0 / .2);
+    transition: transform .12s, filter .12s;
   }
+  .corvo-enviar:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .corvo-enviar:active { transform: translateY(0); }
+  .corvo-enviar:focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
+  .corvo-form:has(input:placeholder-shown) .corvo-enviar { filter: grayscale(.6); opacity: .55; }
   .corvo-form.ocupado .corvo-enviar { opacity: .5; cursor: wait; }
   .corvo-rodape { margin: 0; padding: 0 14px 10px; color: var(--texto-3); font-size: 0.64rem; }
   .corvo-rodape a { color: var(--texto-2); }
@@ -346,7 +384,6 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
       height: var(--corvo-altura, 100dvh); border: 0; border-radius: 0;
       padding-top: env(safe-area-inset-top);
     }
-    .corvo-form { padding-bottom: 8px; }
     .corvo-rodape { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
     .corvo-sub { font-size: 0.64rem; }
   }
