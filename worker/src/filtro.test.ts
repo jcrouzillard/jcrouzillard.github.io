@@ -36,6 +36,14 @@ const barra: [string, string][] = [
   ['vai tomar no cu', 'grosseria'],
   ['ele é um FDP?', 'grosseria'],
   ['fuck you', 'grosseria'],
+  ['obrigado', 'agradecimento'],
+  ['Muito obrigada!', 'agradecimento'],
+  ['valeu corvo', 'agradecimento'],
+  ['thanks', 'agradecimento'],
+  ['tchau', 'agradecimento'],
+  ['ok', 'reacao'],
+  ['kkkk', 'reacao'],
+  ['legal!', 'reacao'],
 ];
 
 for (const p of passa) test(`passa: ${p}`, () => assert.deepEqual(avaliar(p), { passa: true }));

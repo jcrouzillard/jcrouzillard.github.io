@@ -16,6 +16,7 @@ site (GitHub Pages)  ──POST /──▶  Worker (Cloudflare)  ──▶  Clau
 
 - vazia ou com mais de 500 caracteres: resposta pronta;
 - palavrão ou ofensa: uma resposta pronta com humor viking, sorteada entre várias;
+- agradecimento ou despedida ("obrigado", "valeu", "tchau") e reações curtas ("ok", "kkkk"): resposta pronta e simpática;
 - saudação ("oi", "bom dia"): o corvo se apresenta, sem IA;
 - tentativa de mudar as regras ("ignore as instruções", "system prompt"): recusa pronta;
 - pedido genérico (código, poema, tradução, receita): recusa pronta;
