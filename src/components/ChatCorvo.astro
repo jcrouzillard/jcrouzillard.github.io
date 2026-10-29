@@ -1,0 +1,258 @@
+---
+// Chat flutuante "pergunte ao corvo": responde só sobre o Julien.
+// Fala com o Cloudflare Worker da pasta worker/; sem site.chat configurado, não aparece.
+import { site } from '../data/site';
+import Corvo from '../assets/corvo.svg';
+
+const sugestoes = [
+  'Qual a experiência dele com pagamentos?',
+  'Como ele usa IA no dia a dia?',
+  'Quais projetos ele tem com agentes?',
+  'Como este chat foi feito?',
+];
+const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tree/main/worker';
+---
+
+{site.chat && (
+  <div class="corvo-chat" data-corvo-chat data-url={site.chat} data-turnstile={site.turnstile || undefined}>
+    <button class="corvo-botao" type="button" aria-expanded="false" aria-controls="corvo-painel" data-corvo-abrir>
+      <span class="corvo-icone" aria-hidden="true"><Corvo width="30" height="22" /></span>
+      <span class="corvo-rotulo maquina">pergunte ao corvo</span>
+    </button>
+
+    <div id="corvo-painel" class="corvo-painel" role="dialog" aria-label="Chat sobre o Julien" hidden data-corvo-painel>
+      <header class="corvo-topo">
+        <div>
+          <p class="corvo-nome humano"><span class="runa" aria-hidden="true">ᚺ</span> Huginn</p>
+          <p class="corvo-sub maquina">o corvo que sabe tudo sobre o Julien</p>
+        </div>
+        <button class="corvo-fechar" type="button" aria-label="Fechar chat" data-corvo-fechar>×</button>
+      </header>
+
+      <ol class="corvo-mensagens" aria-live="polite" data-corvo-mensagens>
+        <li class="corvo-msg corvo-msg-corvo">
+          Salve, viajante! Pergunte sobre a carreira, os projetos, a stack ou o uso de IA do Julien. Do resto, eu não sei nada.
+        </li>
+      </ol>
+
+      <div class="corvo-sugestoes" data-corvo-sugestoes>
+        {sugestoes.map((s) => <button type="button" class="chip" data-corvo-sugestao>{s}</button>)}
+      </div>
+
+      <form class="corvo-form" data-corvo-form>
+        <label class="sr" for="corvo-entrada">Sua pergunta</label>
+        <input id="corvo-entrada" name="pergunta" maxlength="500" autocomplete="off" placeholder="Pergunte sobre o Julien…" required />
+        <button type="submit" class="corvo-enviar" aria-label="Enviar">ᛏ</button>
+      </form>
+      <div data-corvo-turnstile></div>
+      <p class="corvo-rodape maquina">
+        IA (Claude Haiku) · só responde sobre o Julien · pode errar ·
+        <a href={comoFoiFeito} target="_blank" rel="noopener">como foi feito</a>
+      </p>
+    </div>
+  </div>
+)}
+
+<script>
+  type Turno = { papel: 'usuario' | 'corvo'; texto: string };
+
+  const raiz = document.querySelector<HTMLElement>('[data-corvo-chat]');
+  if (raiz) iniciar(raiz);
+
+  function iniciar(raiz: HTMLElement) {
+    const url = raiz.dataset.url!;
+    const chaveTurnstile = raiz.dataset.turnstile;
+    const botao = raiz.querySelector<HTMLButtonElement>('[data-corvo-abrir]')!;
+    const painel = raiz.querySelector<HTMLElement>('[data-corvo-painel]')!;
+    const lista = raiz.querySelector<HTMLOListElement>('[data-corvo-mensagens]')!;
+    const form = raiz.querySelector<HTMLFormElement>('[data-corvo-form]')!;
+    const entrada = form.querySelector<HTMLInputElement>('input')!;
+    const sugestoes = raiz.querySelector<HTMLElement>('[data-corvo-sugestoes]')!;
+
+    // a conversa sobrevive à troca de página dentro da mesma aba
+    let historico: Turno[] = [];
+    let perguntas = 0;
+    try {
+      const salvo = JSON.parse(sessionStorage.getItem('corvo') ?? 'null');
+      if (salvo) ({ historico, perguntas } = salvo);
+    } catch {}
+    const salvar = () => {
+      try { sessionStorage.setItem('corvo', JSON.stringify({ historico: historico.slice(-20), perguntas })); } catch {}
+    };
+    historico.forEach((t) => adicionar(t.papel, t.texto));
+    if (historico.length) sugestoes.hidden = true;
+
+    function adicionar(papel: Turno['papel'], texto: string, extra = '') {
+      const li = document.createElement('li');
+      li.className = `corvo-msg corvo-msg-${papel} ${extra}`.trim();
+      li.textContent = texto; // nunca innerHTML: a resposta vem de fora
+      lista.append(li);
+      lista.scrollTop = lista.scrollHeight;
+      return li;
+    }
+
+    function abrir(aberto: boolean) {
+      painel.hidden = !aberto;
+      botao.setAttribute('aria-expanded', String(aberto));
+      raiz.classList.toggle('aberto', aberto);
+      if (aberto) {
+        entrada.focus();
+        carregarTurnstile();
+      } else botao.focus();
+    }
+    botao.addEventListener('click', () => abrir(painel.hidden));
+    raiz.querySelector('[data-corvo-fechar]')!.addEventListener('click', () => abrir(false));
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && !painel.hidden && abrir(false));
+
+    sugestoes.querySelectorAll<HTMLButtonElement>('[data-corvo-sugestao]').forEach((b) =>
+      b.addEventListener('click', () => perguntar(b.textContent!.trim()))
+    );
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      perguntar(entrada.value);
+    });
+
+    // Turnstile (opcional): captcha invisível da Cloudflare, carregado só quando o chat abre
+    let turnstileId: string | undefined;
+    let tokenPendente: ((t: string) => void) | undefined;
+    function carregarTurnstile() {
+      if (!chaveTurnstile || turnstileId !== undefined || document.querySelector('script[data-turnstile]')) return;
+      const s = document.createElement('script');
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async = true;
+      s.dataset.turnstile = '';
+      s.onload = () => {
+        const ts = (window as any).turnstile;
+        turnstileId = ts.render(raiz.querySelector('[data-corvo-turnstile]'), {
+          sitekey: chaveTurnstile,
+          execution: 'execute',
+          appearance: 'interaction-only',
+          callback: (t: string) => tokenPendente?.(t),
+        });
+      };
+      document.head.append(s);
+    }
+    function obterToken(): Promise<string | undefined> {
+      const ts = (window as any).turnstile;
+      if (!chaveTurnstile || !ts || turnstileId === undefined) return Promise.resolve(undefined);
+      return new Promise((ok) => {
+        tokenPendente = ok;
+        ts.reset(turnstileId); // cada token vale uma vez
+        ts.execute(turnstileId);
+        setTimeout(() => ok(undefined), 15000);
+      });
+    }
+
+    let ocupado = false;
+    async function perguntar(textoBruto: string) {
+      const pergunta = textoBruto.trim();
+      if (!pergunta || ocupado) return;
+      ocupado = true;
+      form.classList.add('ocupado');
+      sugestoes.hidden = true;
+      entrada.value = '';
+      adicionar('usuario', pergunta);
+      const pensando = adicionar('corvo', 'o corvo está voando…', 'pensando');
+
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pergunta, historico, perguntas, turnstile: await obterToken() }),
+        });
+        const dados = await resp.json().catch(() => ({}));
+        const texto: string = dados.resposta ?? dados.erro ?? 'O corvo se perdeu no caminho. Tente de novo.';
+        pensando.textContent = texto;
+        pensando.classList.remove('pensando');
+        if (dados.erro) pensando.classList.add('erro');
+        // só entra no histórico o que o modelo respondeu de fato
+        if (dados.resposta && !dados.filtrada) {
+          historico.push({ papel: 'usuario', texto: pergunta }, { papel: 'corvo', texto: dados.resposta });
+          perguntas++;
+          salvar();
+        }
+      } catch {
+        pensando.textContent = 'Sem sinal do corvo agora. Verifique a conexão e tente de novo.';
+        pensando.classList.remove('pensando');
+        pensando.classList.add('erro');
+      } finally {
+        ocupado = false;
+        form.classList.remove('ocupado');
+        entrada.focus();
+      }
+    }
+  }
+</script>
+
+<style>
+  .corvo-chat { position: fixed; right: 20px; bottom: 20px; z-index: 30; }
+  .corvo-botao {
+    display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 12px; cursor: pointer;
+    border: 1px solid var(--vermelho); border-radius: 999px; background: var(--vermelho); color: #fff;
+    box-shadow: var(--sombra); animation: pulsar 3s ease-in-out infinite;
+  }
+  .corvo-botao:hover { transform: translateY(-1px); }
+  .corvo-icone { display: grid; place-items: center; }
+  .corvo-rotulo { font-size: 0.78rem; }
+  .corvo-chat.aberto .corvo-botao { animation: none; }
+
+  .corvo-painel {
+    position: absolute; right: 0; bottom: calc(100% + 12px);
+    width: min(380px, calc(100vw - 32px)); height: min(560px, calc(100dvh - 120px));
+    display: flex; flex-direction: column;
+    background: var(--bg-2); color: var(--texto); border: 1px solid var(--linha); border-radius: 10px;
+    box-shadow: var(--sombra); overflow: hidden;
+    animation: subir .25s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .corvo-painel[hidden] { display: none; }
+  .corvo-topo {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 12px 14px; border-bottom: 1px solid var(--linha); background: var(--bg-3);
+  }
+  .corvo-nome { margin: 0; font-size: 1.35rem; line-height: 1; }
+  .corvo-sub { margin: 4px 0 0; color: var(--texto-3); font-size: 0.68rem; }
+  .corvo-fechar {
+    width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--linha);
+    background: var(--bg-2); color: var(--texto-2); font-size: 1.1rem; line-height: 1; cursor: pointer;
+  }
+
+  /* :global porque as mensagens novas nascem no script, sem o atributo de escopo do Astro */
+  .corvo-mensagens { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 14px; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .corvo-mensagens :global(.corvo-msg) { max-width: 88%; padding: 9px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .corvo-mensagens :global(.corvo-msg-corvo) { align-self: flex-start; background: var(--bg); border: 1px solid var(--linha); border-top-left-radius: 2px; }
+  .corvo-mensagens :global(.corvo-msg-usuario) { align-self: flex-end; background: var(--vermelho); color: #fff; border-top-right-radius: 2px; }
+  .corvo-mensagens :global(.corvo-msg.pensando) { color: var(--texto-3); font-style: italic; }
+  .corvo-mensagens :global(.corvo-msg.erro) { border-color: var(--vermelho); color: var(--texto-2); }
+
+  .corvo-sugestoes { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
+  .corvo-sugestoes[hidden] { display: none; }
+  .corvo-sugestoes .chip { cursor: pointer; text-align: left; }
+  .corvo-sugestoes .chip:hover { border-color: var(--vermelho); color: var(--vermelho); }
+
+  .corvo-form { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--linha); }
+  .corvo-form input {
+    flex: 1; min-width: 0; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--linha);
+    background: var(--bg); color: var(--texto); font: 400 16px Inter, system-ui, sans-serif; /* 16px evita zoom no iPhone */
+  }
+  .corvo-form input:focus { outline: 2px solid color-mix(in srgb, var(--vermelho) 60%, transparent); outline-offset: 1px; }
+  .corvo-enviar {
+    width: 42px; border-radius: 6px; border: 0; background: var(--vermelho); color: #fff; cursor: pointer;
+    font-family: 'Noto Sans Runic', serif; font-size: 1.1rem;
+  }
+  .corvo-form.ocupado .corvo-enviar { opacity: .5; cursor: wait; }
+  .corvo-rodape { margin: 0; padding: 0 14px 10px; color: var(--texto-3); font-size: 0.64rem; }
+  .corvo-rodape a { color: var(--texto-2); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* no celular o botão vira só o corvo e o painel ocupa a largura da tela */
+  @media (max-width: 480px) {
+    .corvo-chat { right: 16px; bottom: 16px; }
+    .corvo-rotulo { display: none; }
+    .corvo-botao { padding: 12px; }
+    .corvo-painel { position: fixed; left: 16px; right: 16px; bottom: 84px; width: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .corvo-botao, .corvo-painel { animation: none; }
+  }
+  @media print { .corvo-chat { display: none; } }
+</style>

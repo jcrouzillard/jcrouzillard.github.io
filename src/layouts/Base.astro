@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import { versao } from '../data/versao';
+import ChatCorvo from '../components/ChatCorvo.astro';
 
 interface Props {
   titulo?: string;
@@ -85,6 +86,8 @@ const base = import.meta.env.BASE_URL;
         </span>
       </div>
     </footer>
+
+    <ChatCorvo />
 
     <script is:inline>
       document.querySelector('[data-tema-toggle]')?.addEventListener('click', () => {

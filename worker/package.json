@@ -1,0 +1,18 @@
+{
+  "name": "corvo-chat",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test --experimental-strip-types src/filtro.test.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261001.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.155.0"
+  }
+}
