@@ -8,8 +8,10 @@
     <svg viewBox="0 0 64 48" width="44" height="33" aria-hidden="true">
       <!-- asa aberta de trás, mais clara, para dar profundidade no voo -->
       <g class="andarilho-asa-aberta andarilho-asa-tras"><path d="M35 23C35 12 32 2 28-7l-3 6-3-4-1 7-4-3 0 7-5-2 2 6-5 0 6 6-4 2 12 1Z" fill="currentColor" opacity=".5" /></g>
-      <g class="andarilho-pernas" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none">
-        <path d="M33 34l-2 9m0 0h-3m3 0h3" /><path d="M38 34l1 9m0 0h-3m3 0h3" />
+      <!-- patas com tornozelo e dedos (três para a frente, um para trás); cada uma gira no quadril -->
+      <g class="andarilho-pernas" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <g class="andarilho-perna andarilho-perna-tras" opacity=".7"><path d="M32 33l-1.2 5 1.4 5" stroke-width="1.7" /><path d="M32.2 43l4.2.4M32.2 43l3.4 1.9M32.2 43l2-.9M32.2 43l-3 .5" stroke-width="1.2" /></g>
+        <g class="andarilho-perna andarilho-perna-frente"><path d="M37 33l-1.2 5 1.4 5" stroke-width="1.7" /><path d="M37.2 43l4.2.4M37.2 43l3.4 1.9M37.2 43l2-.9M37.2 43l-3 .5" stroke-width="1.2" /></g>
       </g>
       <path d="M4 27l15-3 2 7Z" fill="currentColor" />
       <path d="M16 27c4-8 16-10 24-8 4-4 10-6 14-3l7 2.5-7 2.5c0 6-6 12-16 13-8 1-16-1-22-7Z" fill="currentColor" />
@@ -65,13 +67,31 @@
       return a.finished.then(() => corvo!.classList.remove('voando'));
     }
 
+    const posicaoX = () => new DOMMatrix(getComputedStyle(corvo!).transform).m41;
+
+    // agacha, pula com as patas recolhidas para trás e estica de novo ao pousar
     async function pulinho(dx: number) {
       olharPara(dx > 0);
-      const atual = new DOMMatrix(getComputedStyle(corvo!).transform).m41;
+      const atual = posicaoX();
+      await corpo.animate([{ translate: '0 0' }, { translate: '0 1.5px' }], { duration: 90, easing: 'ease-in' }).finished;
+      corvo!.classList.add('pulando');
       await corvo!.animate(
         [{ transform: `translate(${atual}px, 0)` }, { transform: `translate(${atual + dx / 2}px, -9px)` }, { transform: `translate(${atual + dx}px, 0)` }],
-        { duration: 260, easing: 'ease-out', fill: 'forwards' },
+        { duration: 280, easing: 'ease-out', fill: 'forwards' },
       ).finished;
+      corvo!.classList.remove('pulando');
+    }
+
+    // anda alguns passinhos, uma pata de cada vez, balançando o corpo
+    async function andar(dx: number) {
+      olharPara(dx > 0);
+      const atual = posicaoX();
+      const passos = Math.max(2, Math.round(Math.abs(dx) / 5));
+      corvo!.classList.add('andando');
+      const balanco = corpo.animate([{ translate: '0 0' }, { translate: '0 -1.2px' }, { translate: '0 0' }], { duration: 240, iterations: passos });
+      await corvo!.animate([{ transform: `translate(${atual}px, 0)` }, { transform: `translate(${atual + dx}px, 0)` }], { duration: passos * 240, easing: 'linear', fill: 'forwards' }).finished;
+      balanco.cancel();
+      corvo!.classList.remove('andando');
     }
 
     // abre as asas e bate algumas vezes, com um pulinho no lugar, como quem se espreguiça
@@ -110,12 +130,12 @@
           const sorte = Math.random();
           if (sorte < 0.2) {
             await baterAsas();
-          } else if (sorte < 0.6) {
-            // pulinhos curtos, sem sair do pedaço vazio que ele escolheu
-            const dx = (Math.random() < 0.5 ? -1 : 1) * sorteio(10, 18);
-            if (Math.abs(x + dx) > 26) continue;
+          } else if (sorte < 0.65) {
+            // pulinhos ou passinhos curtos, sem sair do pedaço vazio que ele escolheu
+            const dx = (Math.random() < 0.5 ? -1 : 1) * sorteio(10, 20);
+            if (Math.abs(x + dx) > 28) continue;
             x += dx;
-            await pulinho(dx);
+            await (sorte < 0.42 ? pulinho(dx) : andar(dx));
           } else {
             await bicar();
             if (Math.random() < 0.3) await bicar();
@@ -159,7 +179,15 @@
   .voando .andarilho-asa-aberta, .batendo .andarilho-asa-aberta { display: inline; animation: andarilho-bater .2s ease-in-out infinite alternate; }
   .voando .andarilho-asa-tras, .batendo .andarilho-asa-tras { animation-delay: -.07s; }
   .batendo .andarilho-asa-aberta { animation-duration: .16s; }
-  .voando .andarilho-pernas { opacity: 0; }
+  .andarilho-perna { transform-origin: 34px 33px; transform-box: view-box; transition: transform .15s ease-out; }
+  .andarilho-perna-tras { transform-origin: 32px 33px; }
+  .andarilho-perna-frente { transform-origin: 37px 33px; }
+  /* no ar as patas vão recolhidas para trás, junto do corpo */
+  .voando .andarilho-perna { transform: rotate(80deg); }
+  .pulando .andarilho-perna { transform: rotate(38deg); }
+  .andando .andarilho-perna-frente { animation: andarilho-passo .48s ease-in-out infinite; }
+  .andando .andarilho-perna-tras { animation: andarilho-passo .48s ease-in-out -.24s infinite; }
+  @keyframes andarilho-passo { 0%, 100% { transform: rotate(18deg); } 50% { transform: rotate(-20deg); } }
   /* a asa sobe aberta e desce até passar por baixo do corpo */
   @keyframes andarilho-bater { from { transform: rotate(-6deg) scaleY(1); } to { transform: rotate(4deg) scaleY(-.7); } }
   @media (max-width: 640px) { .andarilho svg { width: 36px; height: 27px; } }
