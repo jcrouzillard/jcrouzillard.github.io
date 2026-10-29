@@ -10,7 +10,7 @@ export const site = {
   // código do site no GoatCounter (https://<código>.goatcounter.com); vazio desliga a contagem
   goatcounter: 'jcrouzillard',
   // chat "pergunte ao corvo": URL do Cloudflare Worker (pasta worker/); vazio esconde o chat
-  chat: '',
+  chat: 'https://corvo-chat.jcrouzillard.workers.dev',
   // chave pública do Cloudflare Turnstile (opcional); vazio desliga o captcha no chat
   turnstile: '',
   descricao:
