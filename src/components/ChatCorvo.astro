@@ -69,15 +69,18 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
     const entrada = form.querySelector<HTMLInputElement>('input')!;
     const sugestoes = raiz.querySelector<HTMLElement>('[data-corvo-sugestoes]')!;
 
-    // a conversa sobrevive à troca de página dentro da mesma aba
+    // a conversa sobrevive à troca de página dentro da mesma aba, some ao fechar a aba
+    // e expira depois de 30 minutos sem uso; nada sai deste navegador além da pergunta enviada
+    const VIDA_MS = 30 * 60 * 1000;
     let historico: Turno[] = [];
     let perguntas = 0;
     try {
       const salvo = JSON.parse(sessionStorage.getItem('corvo') ?? 'null');
-      if (salvo) ({ historico, perguntas } = salvo);
+      if (salvo && Date.now() - (salvo.em ?? 0) < VIDA_MS) ({ historico, perguntas } = salvo);
+      else sessionStorage.removeItem('corvo');
     } catch {}
     const salvar = () => {
-      try { sessionStorage.setItem('corvo', JSON.stringify({ historico: historico.slice(-20), perguntas })); } catch {}
+      try { sessionStorage.setItem('corvo', JSON.stringify({ historico: historico.slice(-20), perguntas, em: Date.now() })); } catch {}
     };
     historico.forEach((t) => adicionar(t.papel, t.texto));
     if (historico.length) sugestoes.hidden = true;

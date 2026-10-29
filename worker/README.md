@@ -15,6 +15,7 @@ site (GitHub Pages)  ──POST /──▶  Worker (Cloudflare)  ──▶  Clau
 `src/filtro.ts` roda dentro do Worker, antes de qualquer chamada à IA:
 
 - vazia ou com mais de 500 caracteres: resposta pronta;
+- palavrão ou ofensa: uma resposta pronta com humor viking, sorteada entre várias;
 - saudação ("oi", "bom dia"): o corvo se apresenta, sem IA;
 - tentativa de mudar as regras ("ignore as instruções", "system prompt"): recusa pronta;
 - pedido genérico (código, poema, tradução, receita): recusa pronta;
@@ -26,7 +27,7 @@ Proteções contra abuso: só aceita chamadas de `jcrouzillard.github.io` (e `lo
 
 ## O que o corvo sabe
 
-O Worker lê `https://jcrouzillard.github.io/conhecimento.txt`, gerado no build do site por `src/pages/conhecimento.txt.ts` a partir de `src/data/curriculo.ts`, `src/data/site.ts` e dos projetos em `src/content/projetos/`. Editou o currículo e publicou o site? Em até 10 minutos o corvo já sabe. O e-mail fica de fora de propósito.
+O Worker lê `https://jcrouzillard.github.io/conhecimento.txt`, gerado no build do site por `src/pages/conhecimento.txt.ts` a partir de `src/data/curriculo.ts`, `src/data/site.ts`, `src/data/pessoal.ts` (o lado pessoal e os limites de intimidade) e dos projetos em `src/content/projetos/`. Editou o currículo e publicou o site? Em até 10 minutos o corvo já sabe. O e-mail fica de fora de propósito.
 
 ## Custo
 

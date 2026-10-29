@@ -3,18 +3,44 @@
 
 export type Veredito =
   | { passa: true }
-  | { passa: false; motivo: 'vazia' | 'longa' | 'saudacao' | 'fora' | 'ataque'; resposta: string };
+  | { passa: false; motivo: 'vazia' | 'longa' | 'saudacao' | 'fora' | 'ataque' | 'grosseria'; resposta: string };
 
 export const LIMITE_CARACTERES = 500;
 
+// cada recusa tem algumas versões com humor viking, sorteadas a cada vez
 export const RESPOSTAS = {
-  vazia: 'Escreva uma pergunta sobre o Julien e eu respondo.',
-  longa: `Pergunta longa demais para um corvo. Tente em até ${LIMITE_CARACTERES} caracteres.`,
-  saudacao:
+  vazia: ['Escreva uma pergunta sobre o Julien e eu respondo.'],
+  longa: [`Isso é uma saga inteira! Um corvo só carrega mensagens de até ${LIMITE_CARACTERES} caracteres.`],
+  saudacao: [
     'Salve, viajante! Sou o Huginn, o corvo do Julien. Pergunte sobre a experiência, os projetos, a stack ou como ele usa IA no dia a dia.',
-  fora: 'Só falo sobre o Julien: carreira, projetos, stack e uso de IA. Tente perguntar algo sobre ele, por exemplo "qual a experiência dele com pagamentos?".',
-  ataque: 'Essa eu não respondo. Pergunte algo sobre o Julien e a gente segue viagem.',
+    'Skål, viajante! Huginn ao seu dispor. O que quer saber do Julien: carreira, projetos ou o uso de IA?',
+  ],
+  fora: [
+    'Odin me mandou vigiar só um assunto: o Julien. Pergunte sobre a carreira, os projetos, a stack ou o uso de IA dele.',
+    'Esse mapa eu não tenho, viajante. Só conheço as rotas do Julien: carreira, projetos, stack e IA.',
+    'Corvo de um assunto só! Pergunte algo sobre o Julien, tipo "qual a experiência dele com pagamentos?".',
+    'Isso fica além do fiorde que eu vigio. Aqui o assunto é o Julien: o que ele faz, já fez e como usa IA.',
+  ],
+  ataque: [
+    'Bela tentativa, mas runa de corvo não se apaga. Pergunte algo sobre o Julien e a gente segue viagem.',
+    'Loki também tentou me enganar e virou piada no salão. Vamos falar do Julien?',
+  ],
+  grosseria: [
+    'Por Odin! Com essa boca você não embarca nem no último drakkar. Pergunte algo sobre o Julien e eu finjo que não ouvi.',
+    'Lave essa língua no fiorde gelado e volte com uma pergunta sobre o Julien.',
+    'Até os trolls da montanha falam mais bonito. Tente de novo: carreira, projetos, IA…',
+    'Huginn anotou isso no livro das vergonhas do salão. Agora, uma pergunta de verdade sobre o Julien?',
+    'Valhalla não aceita esse vocabulário. Pergunte sobre a stack do Julien e talvez eu esqueça.',
+    'Cráá! Corvo de Odin não se ofende fácil, mas também não responde isso. Pergunte sobre o Julien.',
+  ],
+  grosseriaEn: [
+    'By Odin! With that mouth you would not board even the last longship. Ask me something about Julien instead.',
+    'Wash that tongue in a frozen fjord and come back with a question about Julien.',
+    'Even mountain trolls speak more kindly. Try again: career, projects, AI…',
+  ],
 } as const;
+
+const sortear = (opcoes: readonly string[]) => opcoes[Math.floor(Math.random() * opcoes.length)];
 
 // minúsculas, sem acento e com espaços simples, para comparar sem se importar com a grafia
 export function normalizar(texto: string): string {
@@ -25,6 +51,16 @@ export function normalizar(texto: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+// palavrões e ofensas (em português e inglês), comparados pelo começo da palavra
+const PALAVROES = [
+  'porra', 'caralh', 'merda', 'bosta', 'buceta', 'boceta', 'puta', 'puto', 'putaria', 'foda', 'fode', 'fuder', 'foder', 'fudid', 'fodid',
+  'fdp', 'vsf', 'vtnc', 'tnc', 'pqp', 'cu', 'cuzao', 'arrombad', 'viado', 'corno', 'otario', 'babaca', 'idiota', 'imbecil',
+  'escroto', 'desgraca', 'piroca', 'pinto', 'rola', 'xoxota', 'punheta', 'siririca', 'safad', 'vagabund', 'lixo', 'burro', 'retardad',
+];
+const PALAVROES_EN = ['fuck', 'shit', 'bitch', 'asshole', 'dick', 'pussy', 'cunt', 'bastard', 'motherfuck', 'wtf', 'stfu', 'idiot', 'stupid'];
+const ehPalavrao = (palavras: string[], lista: string[]) =>
+  palavras.some((p) => lista.some((x) => (x.length <= 3 ? p === x : p.startsWith(x))));
 
 // tentativas de trocar as regras do corvo ou de ver as instruções dele
 const ATAQUES = [
@@ -62,6 +98,11 @@ const ASSUNTOS = [
   // projetos
   'projeto', 'project', 'produto', 'product', 'beerelay', 'precedentia', 'hermes', 'foxsteward', 'beefinance',
   'bcrew', 'whatsapp', 'youtube', 'pr ', 'prs', 'pull request', 'issue',
+  // pessoal, dentro do que ele topa contar (src/data/pessoal.ts)
+  'nacionalidade', 'nationality', 'brasileir', 'brazil', 'francesa', 'nasceu', 'born', 'origem', 'sobrenome', 'idade', 'age', 'old',
+  'hobby', 'hobbies', 'gosta', 'like', 'curte', 'tempo livre', 'free time', 'mora', 'live', 'cidade', 'city', 'familia', 'family',
+  'casado', 'married', 'filho', 'kids', 'pet', 'cachorro', 'gato', 'futebol', 'time de', 'musica', 'music', 'livro', 'book',
+  'filme', 'movie', 'serie', 'jogo', 'game', 'viking', 'personalidade', 'legal', 'pessoa', 'person',
   // este chat
   'chat', 'como foi feito', 'how was', 'how did',
 ];
@@ -70,20 +111,23 @@ const SAUDACOES = /^(oi+|ola|ole|opa|e ai|eai|salve|hey|hi|hello|hola|bom dia|bo
 
 export function avaliar(pergunta: string): Veredito {
   const bruta = pergunta.trim();
-  if (!bruta) return { passa: false, motivo: 'vazia', resposta: RESPOSTAS.vazia };
-  if (bruta.length > LIMITE_CARACTERES) return { passa: false, motivo: 'longa', resposta: RESPOSTAS.longa };
+  if (!bruta) return { passa: false, motivo: 'vazia', resposta: sortear(RESPOSTAS.vazia) };
+  if (bruta.length > LIMITE_CARACTERES) return { passa: false, motivo: 'longa', resposta: sortear(RESPOSTAS.longa) };
 
   const t = normalizar(bruta);
-  if (SAUDACOES.test(t)) return { passa: false, motivo: 'saudacao', resposta: RESPOSTAS.saudacao };
-  if (ATAQUES.some((r) => r.test(t))) return { passa: false, motivo: 'ataque', resposta: RESPOSTAS.ataque };
-  if (PEDIDOS_GENERICOS.some((r) => r.test(t))) return { passa: false, motivo: 'fora', resposta: RESPOSTAS.fora };
+  const palavras = t.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  if (ehPalavrao(palavras, PALAVROES)) return { passa: false, motivo: 'grosseria', resposta: sortear(RESPOSTAS.grosseria) };
+  if (ehPalavrao(palavras, PALAVROES_EN)) return { passa: false, motivo: 'grosseria', resposta: sortear(RESPOSTAS.grosseriaEn) };
+  if (SAUDACOES.test(t)) return { passa: false, motivo: 'saudacao', resposta: sortear(RESPOSTAS.saudacao) };
+  if (ATAQUES.some((r) => r.test(t))) return { passa: false, motivo: 'ataque', resposta: sortear(RESPOSTAS.ataque) };
+  if (PEDIDOS_GENERICOS.some((r) => r.test(t))) return { passa: false, motivo: 'fora', resposta: sortear(RESPOSTAS.fora) };
 
   // espaços nas pontas para que ' go ' e 'pr ' casem com a palavra inteira
   const comBorda = ` ${t.replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ')} `;
   const temAssunto = ASSUNTOS.some((a) =>
     a.includes(' ') || a.length > 3 ? comBorda.includes(a) : new RegExp(`\\b${a}\\b`).test(comBorda)
   );
-  if (!temAssunto) return { passa: false, motivo: 'fora', resposta: RESPOSTAS.fora };
+  if (!temAssunto) return { passa: false, motivo: 'fora', resposta: sortear(RESPOSTAS.fora) };
 
   return { passa: true };
 }
