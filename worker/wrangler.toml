@@ -1,0 +1,23 @@
+# Worker do chat "pergunte ao corvo". Passo a passo do deploy no README.md desta pasta.
+name = "corvo-chat"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+tsconfig = "tsconfig.json"
+
+[vars]
+# origens que podem chamar o chat (o site e o servidor local do Astro)
+ORIGENS = "https://jcrouzillard.github.io,http://localhost:4321"
+# de onde vem o que o corvo sabe sobre o Julien (gerado pelo site em src/pages/conhecimento.txt.ts)
+CONHECIMENTO_URL = "https://jcrouzillard.github.io/conhecimento.txt"
+MODELO = "claude-haiku-5-5"
+
+# até 6 perguntas por minuto por IP; o resto recebe "calma, viajante" sem chamar a IA
+[[ratelimits]]
+name = "LIMITE"
+namespace_id = "1001"
+simple = { limit = 6, period = 60 }
+
+# segredos (não ficam aqui):
+#   npx wrangler secret put ANTHROPIC_API_KEY
+#   npx wrangler secret put TURNSTILE_SECRET   (opcional)

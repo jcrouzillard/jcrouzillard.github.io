@@ -9,6 +9,10 @@ export const site = {
   email: '', // deixe vazio para não expor
   // código do site no GoatCounter (https://<código>.goatcounter.com); vazio desliga a contagem
   goatcounter: 'jcrouzillard',
+  // chat "pergunte ao corvo": URL do Cloudflare Worker (pasta worker/); vazio esconde o chat
+  chat: '',
+  // chave pública do Cloudflare Turnstile (opcional); vazio desliga o captcha no chat
+  turnstile: '',
   descricao:
     'Portfólio de Julien Crouzillard: engenheiro backend sênior (Java, Go) com mais de 20 anos em tecnologia, Engenharia de Plataforma e produtos com IA construídos com specs, squads de agentes e um backend que decide.',
 };
