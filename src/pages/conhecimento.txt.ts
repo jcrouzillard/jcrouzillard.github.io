@@ -4,6 +4,7 @@
 import { getCollection } from 'astro:content';
 import { site, principios, trajetoria } from '../data/site';
 import { curriculo } from '../data/curriculo';
+import { pessoal } from '../data/pessoal';
 
 export async function GET() {
   const projetos = (await getCollection('projetos')).sort((a, b) => a.data.ordem - b.data.ordem);
@@ -35,6 +36,15 @@ export async function GET() {
 
     '## Princípios de trabalho',
     ...principios.map((p) => `- ${p.titulo}: ${p.texto}`),
+
+    '## Lado pessoal (pode contar)',
+    ...pessoal.fatos.map((f) => `- ${f}`),
+
+    '## Jeito de responder certas perguntas pessoais',
+    ...pessoal.jeito.map((j) => `- ${j}`),
+
+    '## Limites pessoais (não responder, recusar com leveza)',
+    ...pessoal.limites.map((l) => `- ${l}`),
 
     '## Projetos próprios',
     c.projetos.resumo,
