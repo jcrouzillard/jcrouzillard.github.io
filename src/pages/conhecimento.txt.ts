@@ -40,6 +40,9 @@ export async function GET() {
     '## Lado pessoal (pode contar)',
     ...pessoal.fatos.map((f) => `- ${f}`),
 
+    '## Jeito de responder certas perguntas pessoais',
+    ...pessoal.jeito.map((j) => `- ${j}`),
+
     '## Limites pessoais (não responder, recusar com leveza)',
     ...pessoal.limites.map((l) => `- ${l}`),
 
