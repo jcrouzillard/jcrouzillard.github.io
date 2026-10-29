@@ -10,11 +10,17 @@ const sugestoes = [
   'Quais projetos ele tem com agentes?',
   'Como este chat foi feito?',
 ];
+// apresentação na primeira vez que a pessoa abre o chat (depois fica só a saudação curta)
+const apresentacao = [
+  'Cráá! Salve, viajante. Eu sou Huginn, o corvo do Julien.',
+  'Sou o fiel escudeiro dele há muitas batalhas: autorizadores de pagamento no Bradesco, o core de pagamentos do Mercado Livre e, agora, noites comandando uma tripulação de agentes de IA. Estive em todas, empoleirado no ombro dele.',
+  'Odin me fez pensamento, é isso que Huginn quer dizer. Voo na frente do Julien e volto contando o que vi. Pergunte o que quiser sobre ele: carreira, projetos, stack, IA e até um pouco da vida fora do drakkar.',
+];
 const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tree/main/worker';
 ---
 
 {site.chat && (
-  <div class="corvo-chat" data-corvo-chat data-url={site.chat} data-turnstile={site.turnstile || undefined}>
+  <div class="corvo-chat" data-corvo-chat data-url={site.chat} data-turnstile={site.turnstile || undefined} data-apresentacao={JSON.stringify(apresentacao)}>
     <button class="corvo-botao" type="button" aria-expanded="false" aria-controls="corvo-painel" data-corvo-abrir>
       <span class="corvo-icone" aria-hidden="true"><Corvo width="30" height="22" /></span>
       <span class="corvo-rotulo maquina">pergunte ao corvo</span>
@@ -30,7 +36,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
       </header>
 
       <ol class="corvo-mensagens" aria-live="polite" data-corvo-mensagens>
-        <li class="corvo-msg corvo-msg-corvo">
+        <li class="corvo-msg corvo-msg-corvo" data-corvo-saudacao>
           Salve, viajante! Pergunte sobre a carreira, os projetos, a stack ou o uso de IA do Julien. Do resto, eu não sei nada.
         </li>
       </ol>
@@ -85,9 +91,49 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
     historico.forEach((t) => adicionar(t.papel, t.texto));
     if (historico.length) sugestoes.hidden = true;
 
-    function adicionar(papel: Turno['papel'], texto: string, extra = '') {
+    const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const esperar = (ms: number) => new Promise((ok) => setTimeout(ok, reduz ? 0 : ms));
+
+    // "pensando": um corvinho andando de um lado para o outro, com três pontinhos
+    function pensando() {
       const li = document.createElement('li');
-      li.className = `corvo-msg corvo-msg-${papel} ${extra}`.trim();
+      li.className = 'corvo-msg corvo-msg-corvo pensando';
+      li.setAttribute('aria-label', 'o corvo está pensando');
+      li.innerHTML = `<span class="corvo-trilha" aria-hidden="true"><span class="corvo-andando"><svg viewBox="0 0 64 48" width="22" height="17"><path d="M4 30c8-10 18-14 28-12 6-8 14-10 22-6l6 2-5 3c2 4 1 9-2 12-6 7-16 9-26 7l-6 8-2-9C13 34 8 33 4 30Z" fill="currentColor"/><circle cx="47" cy="19" r="1.6" fill="#c9a24a"/></svg></span></span><span class="corvo-pontos" aria-hidden="true"><i></i><i></i><i></i></span>`;
+      lista.append(li);
+      lista.scrollTop = lista.scrollHeight;
+      return li;
+    }
+    function responder(li: HTMLElement, texto: string, erro = false) {
+      li.classList.remove('pensando');
+      li.removeAttribute('aria-label');
+      li.textContent = texto; // nunca innerHTML: a resposta vem de fora
+      if (erro) li.classList.add('erro');
+      lista.scrollTop = lista.scrollHeight;
+    }
+
+    // na primeira vez de cada visitante, o corvo se apresenta contando sua história
+    let apresentou = true;
+    try { apresentou = localStorage.getItem('corvo-apresentado') === '1' || historico.length > 0; } catch {}
+    async function apresentar() {
+      apresentou = true;
+      try { localStorage.setItem('corvo-apresentado', '1'); } catch {}
+      const falas: string[] = JSON.parse(raiz.dataset.apresentacao ?? '[]');
+      raiz.querySelector('[data-corvo-saudacao]')?.remove();
+      sugestoes.hidden = true;
+      for (const fala of falas) {
+        const li = pensando();
+        await esperar(700 + fala.length * 12);
+        responder(li, fala);
+        await esperar(400);
+      }
+      if (!historico.length) sugestoes.hidden = false;
+      lista.scrollTop = lista.scrollHeight;
+    }
+
+    function adicionar(papel: Turno['papel'], texto: string) {
+      const li = document.createElement('li');
+      li.className = `corvo-msg corvo-msg-${papel}`;
       li.textContent = texto; // nunca innerHTML: a resposta vem de fora
       lista.append(li);
       lista.scrollTop = lista.scrollHeight;
@@ -101,6 +147,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
       if (aberto) {
         entrada.focus();
         carregarTurnstile();
+        if (!apresentou) apresentar();
       } else botao.focus();
     }
     botao.addEventListener('click', () => abrir(painel.hidden));
@@ -155,7 +202,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
       sugestoes.hidden = true;
       entrada.value = '';
       adicionar('usuario', pergunta);
-      const pensando = adicionar('corvo', 'o corvo está voando…', 'pensando');
+      const espera = pensando();
 
       try {
         const resp = await fetch(url, {
@@ -165,9 +212,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
         });
         const dados = await resp.json().catch(() => ({}));
         const texto: string = dados.resposta ?? dados.erro ?? 'O corvo se perdeu no caminho. Tente de novo.';
-        pensando.textContent = texto;
-        pensando.classList.remove('pensando');
-        if (dados.erro) pensando.classList.add('erro');
+        responder(espera, texto, !!dados.erro);
         // só entra no histórico o que o modelo respondeu de fato
         if (dados.resposta && !dados.filtrada) {
           historico.push({ papel: 'usuario', texto: pergunta }, { papel: 'corvo', texto: dados.resposta });
@@ -175,9 +220,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
           salvar();
         }
       } catch {
-        pensando.textContent = 'Sem sinal do corvo agora. Verifique a conexão e tente de novo.';
-        pensando.classList.remove('pensando');
-        pensando.classList.add('erro');
+        responder(espera, 'Sem sinal do corvo agora. Verifique a conexão e tente de novo.', true);
       } finally {
         ocupado = false;
         form.classList.remove('ocupado');
@@ -224,7 +267,23 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
   .corvo-mensagens :global(.corvo-msg) { max-width: 88%; padding: 9px 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
   .corvo-mensagens :global(.corvo-msg-corvo) { align-self: flex-start; background: var(--bg); border: 1px solid var(--linha); border-top-left-radius: 2px; }
   .corvo-mensagens :global(.corvo-msg-usuario) { align-self: flex-end; background: var(--vermelho); color: #fff; border-top-right-radius: 2px; }
-  .corvo-mensagens :global(.corvo-msg.pensando) { color: var(--texto-3); font-style: italic; }
+  .corvo-mensagens :global(.corvo-msg.pensando) { display: flex; align-items: flex-end; gap: 6px; padding: 8px 12px 9px; color: var(--ouro); }
+  /* o corvinho anda de um lado para o outro, dando pulinhos, enquanto pensa */
+  .corvo-mensagens :global(.corvo-trilha) { display: inline-flex; width: 50px; }
+  .corvo-mensagens :global(.corvo-andando) { display: inline-flex; animation: corvo-andar 2.4s ease-in-out infinite; }
+  .corvo-mensagens :global(.corvo-andando svg) { animation: corvo-pulinho .4s ease-in-out infinite alternate; }
+  .corvo-mensagens :global(.corvo-pontos) { display: inline-flex; gap: 3px; padding-bottom: 4px; }
+  .corvo-mensagens :global(.corvo-pontos i) { width: 4px; height: 4px; border-radius: 50%; background: var(--texto-3); animation: corvo-ponto 1.2s ease-in-out infinite; }
+  .corvo-mensagens :global(.corvo-pontos i:nth-child(2)) { animation-delay: .2s; }
+  .corvo-mensagens :global(.corvo-pontos i:nth-child(3)) { animation-delay: .4s; }
+  @keyframes corvo-andar {
+    0%, 100% { transform: translateX(0) scaleX(1); }
+    45% { transform: translateX(26px) scaleX(1); }
+    50% { transform: translateX(26px) scaleX(-1); }
+    95% { transform: translateX(0) scaleX(-1); }
+  }
+  @keyframes corvo-pulinho { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-3px) rotate(3deg); } }
+  @keyframes corvo-ponto { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
   .corvo-mensagens :global(.corvo-msg.erro) { border-color: var(--vermelho); color: var(--texto-2); }
 
   .corvo-sugestoes { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
@@ -256,6 +315,7 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
   }
   @media (prefers-reduced-motion: reduce) {
     .corvo-botao, .corvo-painel { animation: none; }
+    .corvo-mensagens :global(.corvo-andando), .corvo-mensagens :global(.corvo-andando svg), .corvo-mensagens :global(.corvo-pontos i) { animation: none; }
   }
   @media print { .corvo-chat { display: none; } }
 </style>
