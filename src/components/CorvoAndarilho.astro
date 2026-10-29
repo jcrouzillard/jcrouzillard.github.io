@@ -1,17 +1,37 @@
 ---
-// Huginn de passagem: de vez em quando o corvo pousa num canto vazio da página,
-// dá uns pulinhos, bica o chão e vai embora. Clicar nele abre o chat.
+// Huginn de passagem: galhos de freixo saem das bordas das seções e, de vez em quando,
+// o corvo pousa num deles, anda, pula, bica e bate as asas, voa para outro galho e vai embora.
+// Sem galho à vista, pousa num canto vazio da página. Clicar nele abre o chat.
 ---
+
+<!-- galho de freixo no traço da xilogravura; o script põe uma cópia no topo de cada seção -->
+<template data-galho-modelo>
+  <svg class="galho" viewBox="0 0 200 44" aria-hidden="true">
+    <path d="M0 17C50 20 120 18 193 12 150 20 90 26 0 29Z" fill="currentColor" />
+    <path d="M6 23C50 24 100 22 150 18" stroke="var(--bg)" stroke-width=".7" fill="none" opacity=".55" />
+    <path d="M72 20C79 13 85 9 94 5M134 18c7 5 14 9 24 11M162 15l11-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+    <g fill="var(--ouro)" opacity=".85">
+      <path d="M94 5c4-4 10-4 13-1-4 3-9 4-13 1Z" /><path d="M88 9c1-5 5-8 9-8-1 4-4 7-9 8Z" />
+      <path d="M158 29c5-1 10 1 12 5-5 1-9-1-12-5Z" /><path d="M173 7c3-4 8-5 12-3-3 4-8 5-12 3Z" />
+      <path d="M193 12c3-2 6-2 7 0-2 2-5 2-7 0Z" />
+    </g>
+  </svg>
+</template>
 
 <button class="andarilho" type="button" tabindex="-1" aria-label="Huginn, o corvo: clique para conversar" hidden data-andarilho>
   <span class="andarilho-corpo">
     <svg viewBox="0 0 64 48" width="44" height="33" aria-hidden="true">
-      <g class="andarilho-pernas" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none">
-        <path d="M33 34l-2 9m0 0h-3m3 0h3" /><path d="M38 34l1 9m0 0h-3m3 0h3" />
+      <!-- asa aberta de trás, mais clara, para dar profundidade no voo -->
+      <g class="andarilho-asa-aberta andarilho-asa-tras"><path d="M35 23C35 12 32 2 28-7l-3 6-3-4-1 7-4-3 0 7-5-2 2 6-5 0 6 6-4 2 12 1Z" fill="currentColor" opacity=".5" /></g>
+      <!-- patas com tornozelo e dedos (três para a frente, um para trás); cada uma gira no quadril -->
+      <g class="andarilho-pernas" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <g class="andarilho-perna andarilho-perna-tras" opacity=".7"><path d="M32 33l-1.2 5 1.4 5" stroke-width="1.7" /><path d="M32.2 43l4.2.4M32.2 43l3.4 1.9M32.2 43l2-.9M32.2 43l-3 .5" stroke-width="1.2" /></g>
+        <g class="andarilho-perna andarilho-perna-frente"><path d="M37 33l-1.2 5 1.4 5" stroke-width="1.7" /><path d="M37.2 43l4.2.4M37.2 43l3.4 1.9M37.2 43l2-.9M37.2 43l-3 .5" stroke-width="1.2" /></g>
       </g>
       <path d="M4 27l15-3 2 7Z" fill="currentColor" />
       <path d="M16 27c4-8 16-10 24-8 4-4 10-6 14-3l7 2.5-7 2.5c0 6-6 12-16 13-8 1-16-1-22-7Z" fill="currentColor" />
       <g class="andarilho-asa"><path d="M22 25c6-4 14-5 21-2-5 6-13 8-21 2Z" fill="currentColor" stroke="var(--bg)" stroke-width=".8" /></g>
+      <g class="andarilho-asa-aberta"><path d="M35 23C35 12 32 2 28-7l-3 6-3-4-1 7-4-3 0 7-5-2 2 6-5 0 6 6-4 2 12 1Z" fill="currentColor" stroke="var(--bg)" stroke-width=".7" stroke-linejoin="round" /></g>
       <circle cx="51" cy="17.6" r="1.5" fill="#c9a24a" />
     </svg>
   </span>
@@ -19,13 +39,60 @@
 
 <script>
   const corvo = document.querySelector<HTMLButtonElement>('[data-andarilho]');
+  const modelo = document.querySelector<HTMLTemplateElement>('[data-galho-modelo]');
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const celular = matchMedia('(max-width: 640px)').matches;
+
+  // ── galhos ─────────────────────────────────────────────────
+  // galhos no respiro (padding) de cima e de baixo de cada seção, onde não há conteúdo
+  type Galho = { esquerda: boolean; topo: number; escala: number };
+  const galhos: Galho[] = [];
+  const LARGURA_GALHO = celular ? 130 : 200;
+  const camada = document.createElement('div');
+  camada.className = 'galhos';
+  camada.setAttribute('aria-hidden', 'true');
+  document.body.append(camada);
+
+  function plantarGalhos() {
+    if (!modelo) return;
+    camada.replaceChildren();
+    galhos.length = 0;
+    const secoes = [...document.querySelectorAll<HTMLElement>('main section')].filter((s) => !s.parentElement?.closest('section'));
+    const plantar = (esquerda: boolean, linha: number) => {
+      const escala = LARGURA_GALHO / 200;
+      const g: Galho = { esquerda, topo: linha - 18 * escala, escala };
+      const svg = modelo.content.firstElementChild!.cloneNode(true) as SVGElement;
+      svg.style.cssText = `top:${g.topo}px;width:${LARGURA_GALHO}px;${esquerda ? 'left:0' : 'right:0;transform:scaleX(-1)'}`;
+      camada.append(svg);
+      galhos.push(g);
+    };
+    secoes.forEach((secao, i) => {
+      const estilo = getComputedStyle(secao);
+      const caixa = secao.getBoundingClientRect();
+      const acima = parseFloat(estilo.paddingTop), abaixo = parseFloat(estilo.paddingBottom);
+      // galho de cima no lado que alterna; o de baixo no lado oposto ao de cima da próxima seção,
+      // para que dois galhos vizinhos fiquem em lados diferentes e o corvo possa voar entre eles
+      if (acima >= 48) plantar(i % 2 === 0, caixa.top + scrollY + acima * 0.62);
+      if (abaixo >= 48 && i < secoes.length - 1) plantar(i % 2 === 0, caixa.bottom + scrollY - abaixo * 0.4);
+    });
+  }
+  plantarGalhos();
+  let replantio = 0;
+  new ResizeObserver(() => { clearTimeout(replantio); replantio = window.setTimeout(plantarGalhos, 200); }).observe(document.body);
+
+  // ponto de pouso sobre o galho: x local (0 a 200, a partir da borda) vira coordenada da página
+  function pouso(g: Galho, local: number) {
+    const largura = document.documentElement.clientWidth;
+    const x = g.esquerda ? local * g.escala : largura - local * g.escala;
+    const y = g.topo + (18.5 - (local / 193) * 6) * g.escala; // a borda de cima do galho desce para a ponta
+    return { x, y };
+  }
 
   if (corvo && !reduz) {
     const corpo = corvo.querySelector<HTMLElement>('.andarilho-corpo')!;
-    const celular = matchMedia('(max-width: 640px)').matches;
     const LARGURA = celular ? 36 : 44;
     const ALTURA = celular ? 27 : 33;
+    const PE_X = LARGURA * (35 / 64), PE_Y = ALTURA * (43.5 / 48); // onde ficam os pés dentro do desenho
     const sorteio = (min: number, max: number) => min + Math.random() * (max - min);
     const esperar = (ms: number) => new Promise((ok) => setTimeout(ok, ms));
     // o que estiver nestes elementos é conteúdo: o corvo nunca pousa em cima
@@ -38,37 +105,81 @@
       return ![...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
     }
 
-    // procura um lugar vazio visível na tela, com folga em volta do corvo
+    // sem galho à vista: procura um lugar vazio na tela, com folga em volta do corvo (coordenadas da página)
     function lugarVazio(): { x: number; y: number } | null {
       const w = innerWidth, h = innerHeight;
       for (let tentativa = 0; tentativa < 40; tentativa++) {
         const x = sorteio(12, w - LARGURA - 12);
         const y = sorteio(h * 0.22, h - ALTURA - 24);
         const pontos = [[-14, -10], [LARGURA / 2, -10], [LARGURA + 14, -10], [-14, ALTURA / 2], [LARGURA / 2, ALTURA / 2], [LARGURA + 14, ALTURA / 2], [-14, ALTURA + 6], [LARGURA / 2, ALTURA + 6], [LARGURA + 14, ALTURA + 6]];
-        if (pontos.every(([dx, dy]) => vazio(x + dx, y + dy))) return { x, y };
+        if (pontos.every(([dx, dy]) => vazio(x + dx, y + dy))) return { x: x + PE_X + scrollX, y: y + PE_Y + scrollY };
       }
       return null;
     }
 
+    const galhosVisiveis = () => galhos.filter((g) => {
+      const y = g.topo + 18 * g.escala - scrollY;
+      return y > 100 && y < innerHeight - 30;
+    });
+
     let lado = 1;
     function olharPara(direita: boolean) { lado = direita ? 1 : -1; corpo.style.setProperty('--lado', String(lado)); }
 
-    function voar(de: [number, number], para: [number, number], ms: number) {
+    // o corvo fica preso a uma âncora (left/top) e se move por translate; pos é o deslocamento atual
+    let ancora = { x: 0, y: 0 };
+    let pos = { x: 0, y: 0 };
+    const mover = (x: number, y: number) => `translate(${x}px, ${y}px)`;
+
+    function voar(para: { x: number; y: number }, ms: number) {
       corvo!.classList.add('voando');
+      const de = pos;
+      pos = para;
       const a = corvo!.animate(
-        [{ transform: `translate(${de[0]}px, ${de[1]}px)` }, { transform: `translate(${(de[0] + para[0]) / 2}px, ${Math.min(de[1], para[1]) - 40}px)`, offset: 0.55 }, { transform: `translate(${para[0]}px, ${para[1]}px)` }],
+        [{ transform: mover(de.x, de.y) }, { transform: mover((de.x + para.x) / 2, Math.min(de.y, para.y) - 40), offset: 0.55 }, { transform: mover(para.x, para.y) }],
         { duration: ms, easing: 'ease-in-out', fill: 'forwards' },
       );
       return a.finished.then(() => corvo!.classList.remove('voando'));
     }
+    // voa até um ponto da página (onde ficam os pés), com a duração conforme a distância
+    function voarPara(alvo: { x: number; y: number }) {
+      const para = { x: alvo.x - PE_X - ancora.x, y: alvo.y - PE_Y - ancora.y };
+      olharPara(para.x > pos.x);
+      const ms = Math.min(2200, Math.max(1000, Math.hypot(para.x - pos.x, para.y - pos.y) * 1.8));
+      return voar(para, ms);
+    }
 
-    async function pulinho(dx: number) {
+    // agacha, pula com as patas recolhidas para trás e estica de novo ao pousar
+    async function pulinho(dx: number, dy: number) {
       olharPara(dx > 0);
-      const atual = new DOMMatrix(getComputedStyle(corvo!).transform).m41;
+      const de = pos;
+      pos = { x: de.x + dx, y: de.y + dy };
+      await corpo.animate([{ translate: '0 0' }, { translate: '0 1.5px' }], { duration: 90, easing: 'ease-in' }).finished;
+      corvo!.classList.add('pulando');
       await corvo!.animate(
-        [{ transform: `translate(${atual}px, 0)` }, { transform: `translate(${atual + dx / 2}px, -9px)` }, { transform: `translate(${atual + dx}px, 0)` }],
-        { duration: 260, easing: 'ease-out', fill: 'forwards' },
+        [{ transform: mover(de.x, de.y) }, { transform: mover(de.x + dx / 2, de.y + dy / 2 - 9) }, { transform: mover(pos.x, pos.y) }],
+        { duration: 280, easing: 'ease-out', fill: 'forwards' },
       ).finished;
+      corvo!.classList.remove('pulando');
+    }
+
+    // anda alguns passinhos, uma pata de cada vez, balançando o corpo
+    async function andar(dx: number, dy: number) {
+      olharPara(dx > 0);
+      const de = pos;
+      pos = { x: de.x + dx, y: de.y + dy };
+      const passos = Math.max(2, Math.round(Math.abs(dx) / 5));
+      corvo!.classList.add('andando');
+      const balanco = corpo.animate([{ translate: '0 0' }, { translate: '0 -1.2px' }, { translate: '0 0' }], { duration: 240, iterations: passos });
+      await corvo!.animate([{ transform: mover(de.x, de.y) }, { transform: mover(pos.x, pos.y) }], { duration: passos * 240, easing: 'linear', fill: 'forwards' }).finished;
+      balanco.cancel();
+      corvo!.classList.remove('andando');
+    }
+
+    // abre as asas e bate algumas vezes, com um pulinho no lugar, como quem se espreguiça
+    async function baterAsas() {
+      corvo!.classList.add('batendo');
+      await corpo.animate([{ translate: '0 0' }, { translate: '0 -5px' }, { translate: '0 0' }], { duration: 640, easing: 'ease-in-out' }).finished;
+      corvo!.classList.remove('batendo');
     }
 
     async function bicar() {
@@ -78,43 +189,74 @@
       ).finished;
     }
 
+    // um tempinho no mesmo lugar: anda ou pula pelo galho (sem sair dele), bica e bate as asas
+    async function ficar(g: Galho | null, local: number) {
+      const acoes = Math.round(sorteio(3, 6));
+      for (let i = 0; i < acoes; i++) {
+        await esperar(sorteio(350, 900));
+        const sorte = Math.random();
+        if (sorte < 0.2) {
+          await baterAsas();
+        } else if (sorte < 0.65) {
+          const passo = (Math.random() < 0.5 ? -1 : 1) * sorteio(10, 22);
+          let dx: number, dy = 0;
+          if (g) {
+            const novo = local + passo / g.escala;
+            if (novo < 30 || novo > 165) continue;
+            const a = pouso(g, local), b = pouso(g, novo);
+            dx = b.x - a.x; dy = b.y - a.y; local = novo;
+          } else {
+            if (Math.abs(pos.x + passo) > 28) continue;
+            dx = passo;
+          }
+          await (sorte < 0.42 ? pulinho(dx, dy) : andar(dx, dy));
+        } else {
+          await bicar();
+          if (Math.random() < 0.3) await bicar();
+        }
+      }
+    }
+
     let ocupado = false;
     async function visitar() {
       if (ocupado || document.hidden || document.querySelector('[data-corvo-chat].aberto')) return;
-      const lugar = lugarVazio();
-      if (!lugar) return;
+      const vistos = galhosVisiveis();
+      let galho: Galho | null = vistos.length ? vistos[Math.floor(Math.random() * vistos.length)] : null;
+      let local = sorteio(40, 150);
+      const primeiro = galho ? pouso(galho, local) : lugarVazio();
+      if (!primeiro) return;
       ocupado = true;
       // posição na página, não na tela: se o visitante rolar, o corvo fica onde pousou
-      corvo!.style.left = `${lugar.x + scrollX}px`;
-      corvo!.style.top = `${lugar.y + scrollY}px`;
+      ancora = { x: primeiro.x - PE_X, y: primeiro.y - PE_Y };
+      corvo!.style.left = `${ancora.x}px`;
+      corvo!.style.top = `${ancora.y}px`;
+      const daEsquerda = primeiro.x - scrollX < innerWidth / 2;
+      pos = { x: daEsquerda ? -(ancora.x - scrollX) - 80 : innerWidth - (ancora.x - scrollX) + 40, y: -(ancora.y - scrollY) - 60 };
+      corvo!.style.transform = mover(pos.x, pos.y);
       corvo!.hidden = false;
-      const daEsquerda = lugar.x > innerWidth / 2 ? false : true;
-      const entrada: [number, number] = [daEsquerda ? -lugar.x - 80 : innerWidth - lugar.x + 40, -lugar.y - 60];
-      olharPara(daEsquerda);
       try {
-        await voar(entrada, [0, 0], 1500);
-        let x = 0;
-        const acoes = Math.round(sorteio(3, 6));
-        for (let i = 0; i < acoes; i++) {
-          await esperar(sorteio(350, 900));
-          if (Math.random() < 0.55) {
-            // pulinhos curtos, sem sair do pedaço vazio que ele escolheu
-            const dx = (Math.random() < 0.5 ? -1 : 1) * sorteio(10, 18);
-            if (Math.abs(x + dx) > 26) continue;
-            x += dx;
-            await pulinho(dx);
-          } else {
-            await bicar();
-            if (Math.random() < 0.3) await bicar();
-          }
+        await voarPara(primeiro);
+        await ficar(galho, local);
+        // às vezes pula para outro galho à vista, até duas vezes, antes de ir embora
+        for (let voo = 0; galho && voo < 2 && Math.random() < 0.65; voo++) {
+          const outros = galhosVisiveis().filter((g) => g !== galho);
+          if (!outros.length) break;
+          galho = outros[Math.floor(Math.random() * outros.length)];
+          local = sorteio(40, 150);
+          await esperar(sorteio(300, 700));
+          await voarPara(pouso(galho, local));
+          await ficar(galho, local);
         }
         await esperar(sorteio(500, 1100));
         const paraDireita = Math.random() < 0.5;
+        const ax = ancora.x - scrollX, ay = ancora.y - scrollY;
         olharPara(paraDireita);
-        await voar([x, 0], [paraDireita ? innerWidth - lugar.x + 60 : -lugar.x - 90, -lugar.y - 80], 1400);
+        await voar({ x: paraDireita ? innerWidth - ax + 60 : -ax - 90, y: -ay - 80 }, 1400);
       } finally {
         corvo!.hidden = true;
         corvo!.getAnimations().forEach((a) => a.cancel());
+        corvo!.style.transform = '';
+        pos = { x: 0, y: 0 };
         ocupado = false;
       }
     }
@@ -137,11 +279,27 @@
     color: var(--texto); cursor: pointer; line-height: 0; -webkit-tap-highlight-color: transparent;
   }
   .andarilho[hidden] { display: none; }
+  :global(.galhos) { position: absolute; inset: 0 0 auto 0; height: 0; z-index: 1; pointer-events: none; }
+  :global(.galhos .galho) { position: absolute; height: auto; color: var(--texto); opacity: .88; overflow: visible; }
   .andarilho:hover { color: var(--vermelho); }
   .andarilho-corpo { display: block; transform: scaleX(var(--lado, 1)); transform-origin: 50% 90%; }
-  .andarilho-asa { transform-origin: 30px 24px; transform-box: view-box; }
-  .voando .andarilho-asa { animation: andarilho-bater .22s ease-in-out infinite alternate; }
-  .voando .andarilho-pernas { opacity: 0; }
-  @keyframes andarilho-bater { from { transform: rotate(18deg); } to { transform: rotate(-62deg) translateY(-2px); } }
+  .andarilho svg { overflow: visible; }
+  .andarilho-asa-aberta { display: none; transform-origin: 33px 23px; transform-box: view-box; }
+  .andarilho-asa-tras { translate: 4px -1px; }
+  .voando .andarilho-asa, .batendo .andarilho-asa { display: none; }
+  .voando .andarilho-asa-aberta, .batendo .andarilho-asa-aberta { display: inline; animation: andarilho-bater .2s ease-in-out infinite alternate; }
+  .voando .andarilho-asa-tras, .batendo .andarilho-asa-tras { animation-delay: -.07s; }
+  .batendo .andarilho-asa-aberta { animation-duration: .16s; }
+  .andarilho-perna { transform-origin: 34px 33px; transform-box: view-box; transition: transform .15s ease-out; }
+  .andarilho-perna-tras { transform-origin: 32px 33px; }
+  .andarilho-perna-frente { transform-origin: 37px 33px; }
+  /* no ar as patas vão recolhidas para trás, junto do corpo */
+  .voando .andarilho-perna { transform: rotate(80deg); }
+  .pulando .andarilho-perna { transform: rotate(38deg); }
+  .andando .andarilho-perna-frente { animation: andarilho-passo .48s ease-in-out infinite; }
+  .andando .andarilho-perna-tras { animation: andarilho-passo .48s ease-in-out -.24s infinite; }
+  @keyframes andarilho-passo { 0%, 100% { transform: rotate(18deg); } 50% { transform: rotate(-20deg); } }
+  /* a asa sobe aberta e desce até passar por baixo do corpo */
+  @keyframes andarilho-bater { from { transform: rotate(-6deg) scaleY(1); } to { transform: rotate(4deg) scaleY(-.7); } }
   @media (max-width: 640px) { .andarilho svg { width: 36px; height: 27px; } }
 </style>
