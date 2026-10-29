@@ -140,13 +140,29 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
       return li;
     }
 
+    // no celular o chat ocupa a tela; a altura acompanha o teclado (o iOS não encolhe o 100dvh)
+    const telaPequena = matchMedia('(max-width: 640px)');
+    const ajustarAltura = () => {
+      const vv = window.visualViewport;
+      painel.style.setProperty('--corvo-altura', vv && telaPequena.matches ? `${vv.height}px` : '');
+      if (vv && telaPequena.matches) painel.style.top = `${vv.offsetTop}px`;
+      else painel.style.top = '';
+      lista.scrollTop = lista.scrollHeight;
+    };
+    window.visualViewport?.addEventListener('resize', ajustarAltura);
+    window.visualViewport?.addEventListener('scroll', ajustarAltura);
+    telaPequena.addEventListener('change', ajustarAltura);
+
     function abrir(aberto: boolean) {
       painel.hidden = !aberto;
       botao.setAttribute('aria-expanded', String(aberto));
       raiz.classList.toggle('aberto', aberto);
+      // no celular, a página de trás não rola enquanto o chat está aberto
+      document.documentElement.classList.toggle('corvo-trava', aberto && telaPequena.matches);
       if (aberto) {
         entrada.focus();
         carregarTurnstile();
+        ajustarAltura();
         if (!apresentou) apresentar();
       } else botao.focus();
     }
@@ -306,13 +322,22 @@ const comoFoiFeito = 'https://github.com/jcrouzillard/jcrouzillard.github.io/tre
   .corvo-rodape a { color: var(--texto-2); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-  /* no celular o botão vira só o corvo e o painel ocupa a largura da tela */
-  @media (max-width: 480px) {
-    .corvo-chat { right: 16px; bottom: 16px; }
+  /* no celular o botão vira só o corvo e o chat abre em tela cheia, como um app de mensagens */
+  @media (max-width: 640px) {
+    .corvo-chat { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
     .corvo-rotulo { display: none; }
     .corvo-botao { padding: 12px; }
-    .corvo-painel { position: fixed; left: 16px; right: 16px; bottom: 84px; width: auto; }
+    .corvo-chat.aberto .corvo-botao { display: none; }
+    .corvo-painel {
+      position: fixed; inset: 0 0 auto 0; width: 100%;
+      height: var(--corvo-altura, 100dvh); border: 0; border-radius: 0;
+      padding-top: env(safe-area-inset-top);
+    }
+    .corvo-form { padding-bottom: 8px; }
+    .corvo-rodape { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+    .corvo-sub { font-size: 0.64rem; }
   }
+  :global(html.corvo-trava), :global(html.corvo-trava body) { overflow: hidden; }
   @media (prefers-reduced-motion: reduce) {
     .corvo-botao, .corvo-painel { animation: none; }
     .corvo-mensagens :global(.corvo-andando), .corvo-mensagens :global(.corvo-andando svg), .corvo-mensagens :global(.corvo-pontos i) { animation: none; }

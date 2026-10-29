@@ -3,7 +3,7 @@
 
 export type Veredito =
   | { passa: true }
-  | { passa: false; motivo: 'vazia' | 'longa' | 'saudacao' | 'fora' | 'ataque' | 'grosseria'; resposta: string };
+  | { passa: false; motivo: 'vazia' | 'longa' | 'saudacao' | 'fora' | 'ataque' | 'grosseria' | 'agradecimento' | 'reacao'; resposta: string };
 
 export const LIMITE_CARACTERES = 500;
 
@@ -24,6 +24,17 @@ export const RESPOSTAS = {
   ataque: [
     'Bela tentativa, mas runa de corvo não se apaga. Pergunte algo sobre o Julien e a gente segue viagem.',
     'Loki também tentou me enganar e virou piada no salão. Vamos falar do Julien?',
+  ],
+  agradecimento: [
+    'Skål, viajante! Foi uma honra. Se surgir outra dúvida sobre o Julien, é só chamar o corvo.',
+    'Por nada! Huginn volta para o ombro do Julien, mas fica de olho aqui. Quer saber mais alguma coisa?',
+    'Que Odin guie seus passos! E se quiser falar com o próprio Julien, o LinkedIn dele está no rodapé.',
+    'Disponha, viajante. O drakkar segue no porto se quiser perguntar mais.',
+  ],
+  reacao: [
+    'Cráá! Quer saber mais alguma coisa? Projetos, stack, carreira, IA…',
+    'Anotado nas runas. Mais alguma pergunta sobre o Julien?',
+    'O corvo continua aqui no galho. Pergunte o que quiser sobre o Julien.',
   ],
   grosseria: [
     'Por Odin! Com essa boca você não embarca nem no último drakkar. Pergunte algo sobre o Julien e eu finjo que não ouvi.',
@@ -107,6 +118,8 @@ const ASSUNTOS = [
   'chat', 'como foi feito', 'how was', 'how did',
 ];
 
+const AGRADECIMENTOS = /^(muito )?(obrigad[oa]|brigad[oa]|obg|valeu|vlw|agradec\w*|thanks|thank you|thx|ty|tchau|ate mais|ate logo|falou|flw|bye|see you|adeus)( (corvo|huginn|pela ajuda|mesmo|demais|viu|mano|cara))*[!.\s]*$/;
+const REACOES = /^(ok|okay|beleza|blz|show|legal|top|massa|perfeito|entendi|certo|sim|nao|uau|nossa|hmm+|ah+|kk+|haha+|rs+|lol|nice|cool|great|wow|yes|no|:\)|👍)[!.\s]*$/u;
 const SAUDACOES = /^(oi+|ola|ole|opa|e ai|eai|salve|hey|hi|hello|hola|bom dia|boa tarde|boa noite|good (morning|afternoon|evening)|tudo bem\??)[!.?\s]*$/;
 
 export function avaliar(pergunta: string): Veredito {
@@ -118,6 +131,8 @@ export function avaliar(pergunta: string): Veredito {
   const palavras = t.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   if (ehPalavrao(palavras, PALAVROES)) return { passa: false, motivo: 'grosseria', resposta: sortear(RESPOSTAS.grosseria) };
   if (ehPalavrao(palavras, PALAVROES_EN)) return { passa: false, motivo: 'grosseria', resposta: sortear(RESPOSTAS.grosseriaEn) };
+  if (AGRADECIMENTOS.test(t)) return { passa: false, motivo: 'agradecimento', resposta: sortear(RESPOSTAS.agradecimento) };
+  if (REACOES.test(t)) return { passa: false, motivo: 'reacao', resposta: sortear(RESPOSTAS.reacao) };
   if (SAUDACOES.test(t)) return { passa: false, motivo: 'saudacao', resposta: sortear(RESPOSTAS.saudacao) };
   if (ATAQUES.some((r) => r.test(t))) return { passa: false, motivo: 'ataque', resposta: sortear(RESPOSTAS.ataque) };
   if (PEDIDOS_GENERICOS.some((r) => r.test(t))) return { passa: false, motivo: 'fora', resposta: sortear(RESPOSTAS.fora) };
