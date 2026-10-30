@@ -59,6 +59,7 @@ export async function GET() {
         d.fases.length ? `Fases: ${d.fases.map((f) => `${f.nome} (${f.status})`).join('; ')}` : '',
         `Stack: ${d.stack.join(', ')}`,
         `Página: https://${c.portfolio}/projetos/${p.id}/`,
+        d.site ? `Site do produto: ${d.site}` : '',
         p.body?.trim() ?? '',
       ]
         .filter(Boolean)

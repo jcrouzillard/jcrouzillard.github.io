@@ -89,7 +89,7 @@ export const curriculo = {
     itens: [
       'BeeRelay: CRM e gateway multi-tenant de WhatsApp, com infraestrutura na GCP e app aprovado pela Meta para enviar e receber mensagens pela API oficial; ainda sem clientes.',
       'Precedentia: motor verificável de precedentes jurídicos em Go e pgvector, em que toda resposta aponta para a decisão e a fonte oficial.',
-      'Hermes: produtora de vídeos para o YouTube com 11 agentes de IA e aprovação humana nas etapas-chave, com cerca de 1h30 de trabalho humano por semana.',
+      'Hermes (hermescreator.app.br): produtora de vídeos para o YouTube com 12 agentes de IA e aprovação humana nas etapas-chave, com cerca de 1h30 de trabalho humano por semana.',
       'FoxSteward e BeeFinance (fase inicial): governança de projetos feitos por agentes e finanças no WhatsApp.',
     ],
   },

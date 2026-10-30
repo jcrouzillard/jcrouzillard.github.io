@@ -2,27 +2,28 @@
 nome: Hermes
 ordem: 1
 slogan: A mensagem certa, antes de todos.
-resumo: Uma produtora de vídeos para o YouTube movida por uma equipe de agentes de IA. Encontra o assunto, pesquisa, confere as fontes, escreve, narra com voz clonada e monta o vídeo, com cerca de 1h30 de trabalho humano por semana.
+resumo: Uma produtora de vídeos para o YouTube movida por uma equipe de doze agentes de IA. Encontra o assunto, pesquisa, confere as fontes, escreve, narra com voz clonada e monta o vídeo, com cerca de 1h30 de trabalho humano por semana.
 categoria: Mídia · Agentes de IA
 cor: '#8b8cf6'
 mascote: ../../assets/projects/hermes/logo.svg
 mascoteFala: 'Nada sai sem a palavra final do Zeus.'
 capa: ../../assets/projects/hermes/painel-inicio.png
 visibilidade: privado
-status: Em uso · lançando o primeiro canal
+site: https://hermescreator.app.br/
+status: Em uso · site no ar
 desde: out/2026
 metricas:
   - { valor: '240+', rotulo: 'pull requests' }
-  - { valor: '11', rotulo: 'agentes na equipe' }
+  - { valor: '12', rotulo: 'agentes na equipe' }
   - { valor: '28', rotulo: 'tabelas no banco' }
   - { valor: '~1h30', rotulo: 'humanas por semana' }
 fluxo:
-  - { titulo: 'Radar', detalhe: 'Argos sugere pautas para cada canal' }
+  - { titulo: 'Radar', detalhe: 'Argos traz o assunto, Pítia lê o que o público quer' }
   - { titulo: 'Você aprova', detalhe: 'Um clique decide a pauta', humano: true }
   - { titulo: 'Pesquisa e verificação', detalhe: 'Atena pesquisa, Alétheia confere as fontes' }
   - { titulo: 'Roteiro', detalhe: 'Calíope escreve no estilo do canal' }
   - { titulo: 'Você aprova', detalhe: 'Revisão do roteiro', humano: true }
-  - { titulo: 'Voz, arte e montagem', detalhe: 'Eco narra, Apolo ilustra, Hefesto monta' }
+  - { titulo: 'Voz, arte e montagem', detalhe: 'Eco narra, Euterpe compõe a trilha, Apolo ilustra, Hefesto monta' }
   - { titulo: 'Você assiste', detalhe: 'Aprovação final do vídeo', humano: true }
   - { titulo: 'YouTube e números', detalhe: 'Envio, Shorts e desempenho do canal' }
 principios:
@@ -49,9 +50,11 @@ Canais "sem rosto" no YouTube exigem uma rotina pesada: achar o assunto antes do
 
 ## A abordagem
 
-O Hermes trata a produção como uma **esteira com portões humanos**. Uma equipe de onze agentes, batizados com nomes do Olimpo, faz cada etapa, e o painel concentra tudo que precisa de decisão: pautas para aprovar, roteiros para revisar, vídeos para assistir.
+O Hermes trata a produção como uma **esteira com portões humanos**. Uma equipe de doze agentes, batizados com nomes do Olimpo e coordenados pelo Atlas, faz cada etapa, e o painel concentra tudo que precisa de decisão: pautas para aprovar, roteiros para revisar, vídeos para assistir.
 
 Cada canal tem marca, estilo de vídeo, voz e conta do YouTube próprios. A verificação de fontes é uma etapa à parte, feita por um agente diferente do que pesquisa.
+
+O Hermes ganhou um site próprio, [hermescreator.app.br](https://hermescreator.app.br/), com o Olimpo apresentado deus por deus, a conversa com a equipe e um passeio em vídeo pelo painel.
 
 ## Decisões de engenharia
 

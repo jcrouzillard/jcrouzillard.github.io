@@ -12,7 +12,7 @@ Engenheiro backend sênior (Java, Go, Python) em São Paulo, com mais de 20 anos
 
 | | Projeto | O que é | Stack | Status |
 |---|---|---|---|---|
-| 🎬 | [**Hermes**](https://jcrouzillard.github.io/projetos/hermes/) | Produtora de vídeos para YouTube movida por 11 agentes de IA, com aprovação humana em cada etapa | Python · FastAPI · Claude | Em uso |
+| 🎬 | [**Hermes**](https://jcrouzillard.github.io/projetos/hermes/) | Produtora de vídeos para YouTube movida por 12 agentes de IA ([site](https://hermescreator.app.br/)), com aprovação humana em cada etapa | Python · FastAPI · Claude | Em uso |
 | ⚖️ | [**Precedentia**](https://jcrouzillard.github.io/projetos/precedentia/) | Motor verificável de precedentes jurídicos (STJ). *Search. Rank. Prove.* | Go · Postgres + pgvector · MCP | MVP privado |
 | 🦊 | [**FoxSteward**](https://jcrouzillard.github.io/projetos/foxsteward/) | IT Manager que governa projetos construídos por agentes no GitHub | TypeScript · Next.js · GitHub App | Fundação |
 | 🐝 | [**BeeRelay**](https://jcrouzillard.github.io/projetos/beerelay/) | CRM de campanhas de WhatsApp com IA e gateway multi-tenant | Python · Next.js · GCP · OpenTofu | Em produção |
