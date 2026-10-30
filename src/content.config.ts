@@ -19,6 +19,8 @@ const projetos = defineCollection({
       // privado: código fechado · em-breve: abertura planejada · publico: link para o repo
       visibilidade: z.enum(['privado', 'em-breve', 'publico']).default('privado'),
       repo: z.string().url().optional(),
+      // site público do produto, quando existe
+      site: z.string().url().optional(),
       status: z.string(),
       desde: z.string(),
       metricas: z.array(z.object({ valor: z.string(), rotulo: z.string() })).default([]),

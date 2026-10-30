@@ -45,6 +45,13 @@ const statusFase = { feito: 'concluído', agora: 'em andamento', depois: 'próxi
         <div class="selos entrar" style="--d:.35s">
           <Visibilidade tipo={p.visibilidade} repo={p.repo} />
           <span class="selo"><i class="ponto"></i>{p.status}</span>
+          {
+            p.site && (
+              <a class="selo site" href={p.site} target="_blank" rel="noopener">
+                {new URL(p.site).hostname} ↗
+              </a>
+            )
+          }
         </div>
         {
           p.metricas.length > 0 && (
@@ -173,6 +180,8 @@ const statusFase = { feito: 'concluído', agora: 'em andamento', depois: 'próxi
   .fala { font-size: clamp(1.25rem, 3vw, 1.7rem); color: var(--vermelho); margin: 6px 0 0; }
   .resumo { color: var(--texto-2); max-width: 720px; font-size: 1.08rem; margin: 24px 0; }
   .selos { display: flex; gap: 8px; flex-wrap: wrap; }
+  .selo.site { color: var(--texto); border-color: var(--cor); }
+  .selo.site:hover { background: color-mix(in srgb, var(--cor) 14%, var(--bg-2)); }
   .ponto { width: 7px; height: 7px; border-radius: 50%; background: var(--cor); }
   .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin: 40px 0 0; padding: 0; border-top: 1px solid var(--texto); border-bottom: 1px solid var(--texto); }
   .metricas div { padding: 16px 16px 16px 0; border-right: 1px dashed var(--linha); }
