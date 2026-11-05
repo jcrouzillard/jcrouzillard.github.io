@@ -21,6 +21,8 @@ const projetos = defineCollection({
       repo: z.string().url().optional(),
       // site público do produto, quando existe
       site: z.string().url().optional(),
+      // barco recém-lançado: ganha selo de novidade no card
+      novo: z.boolean().default(false),
       status: z.string(),
       desde: z.string(),
       metricas: z.array(z.object({ valor: z.string(), rotulo: z.string() })).default([]),

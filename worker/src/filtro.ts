@@ -107,7 +107,7 @@ const ASSUNTOS = [
   'pagamento', 'payment', 'split', 'banco', 'bank', 'evento', 'event', 'observabilidade', 'observability',
   'ia', 'ai', 'llm', 'claude', 'anthropic', 'agente', 'agent', 'mcp', 'spec', 'prompt', 'eval', 'automacao', 'automation',
   // projetos
-  'projeto', 'project', 'produto', 'product', 'beerelay', 'precedentia', 'hermes', 'foxsteward', 'beefinance',
+  'projeto', 'project', 'produto', 'product', 'beerelay', 'precedentia', 'hermes', 'foxsteward', 'beefinance', 'ajuri',
   'bcrew', 'whatsapp', 'youtube', 'pr ', 'prs', 'pull request', 'issue',
   // pessoal, dentro do que ele topa contar (src/data/pessoal.ts)
   'nacionalidade', 'nationality', 'brasileir', 'brazil', 'francesa', 'nasceu', 'born', 'origem', 'sobrenome', 'idade', 'age', 'old',
