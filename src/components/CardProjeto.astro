@@ -16,7 +16,7 @@ const numero = String(indice + 1).padStart(2, '0');
 
 <a class="ficha revelar" href={href} style={`--cor: ${p.cor}`}>
   <div class="ficha-cabeca">
-    <span class="maquina num">spec/{numero}</span>
+    <span class="maquina num">spec/{numero}{p.novo && <span class="novo">ᛒ recém-lançado ao mar</span>}</span>
     <Visibilidade tipo={p.visibilidade} repo={p.repo} />
   </div>
   <div class="ficha-corpo">
@@ -50,7 +50,15 @@ const numero = String(indice + 1).padStart(2, '0');
   }
   .ficha:hover { transform: translateY(-3px) rotate(-0.3deg); box-shadow: var(--sombra); }
   .ficha-cabeca { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 12px 32px; border-bottom: 1px dashed var(--linha); }
-  .num { color: var(--texto-3); }
+  .num { color: var(--texto-3); display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .novo {
+    color: var(--cor); border: 1px solid color-mix(in srgb, var(--cor) 55%, var(--linha));
+    background: color-mix(in srgb, var(--cor) 12%, transparent);
+    border-radius: 999px; padding: 2px 9px; font-size: 0.72rem; letter-spacing: 0.04em;
+    animation: novo-pulsa 2.8s ease-in-out infinite;
+  }
+  @keyframes novo-pulsa { 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--cor) 18%, transparent); } }
+  @media (prefers-reduced-motion: reduce) { .novo { animation: none; } }
   .ficha-corpo { display: grid; grid-template-columns: 112px 1fr; gap: 20px; padding: 22px 22px 18px 32px; flex: 1; }
   .mascote {
     width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
