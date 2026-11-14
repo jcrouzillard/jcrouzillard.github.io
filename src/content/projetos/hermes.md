@@ -13,7 +13,7 @@ site: https://hermescreator.app.br/
 status: Em uso · site no ar
 desde: out/2026
 metricas:
-  - { valor: '240+', rotulo: 'pull requests' }
+  - { valor: '420+', rotulo: 'pull requests' }
   - { valor: '12', rotulo: 'agentes na equipe' }
   - { valor: '28', rotulo: 'tabelas no banco' }
   - { valor: '~1h30', rotulo: 'humanas por semana' }
@@ -39,8 +39,8 @@ fases:
   - { nome: 'Rentabilizar: receita por vídeo e pautas que rendem', status: depois }
 stack: [Python, FastAPI, Claude (Anthropic SDK), Claude Code, ffmpeg, SQLite/Turso, Backblaze B2, YouTube Data API, Google OAuth, macOS (pywebview)]
 galeria:
-  - { src: ../../assets/projects/hermes/painel-equipe.png, legenda: 'O Olimpo ao vivo: cada agente e o que está fazendo agora' }
-  - { src: ../../assets/projects/hermes/painel-videos.png, legenda: 'Vídeo esperando aprovação, com versões e Shorts' }
+  - { src: ../../assets/projects/hermes/painel-esteira.png, legenda: 'A Esteira, da pauta ao YouTube: arrastar para a coluna seguinte é aprovar' }
+  - { src: ../../assets/projects/hermes/painel-equipe.png, legenda: 'O Olimpo como linha de produção, com a mesa de quem está trabalhando agora' }
   - { src: ../../assets/projects/hermes/painel-celular.png, legenda: 'O painel também funciona no celular, como app na tela inicial' }
 ---
 
@@ -50,7 +50,7 @@ Canais "sem rosto" no YouTube exigem uma rotina pesada: achar o assunto antes do
 
 ## A abordagem
 
-O Hermes trata a produção como uma **esteira com portões humanos**. Uma equipe de doze agentes, batizados com nomes do Olimpo e coordenados pelo Atlas, faz cada etapa, e o painel concentra tudo que precisa de decisão: pautas para aprovar, roteiros para revisar, vídeos para assistir.
+O Hermes trata a produção como uma **esteira com portões humanos**. Uma equipe de doze agentes, batizados com nomes do Olimpo e coordenados pelo Atlas, faz cada etapa, e o painel abre no **Hoje**, que junta numa fila só tudo que precisa de decisão: pautas para aprovar, roteiros para revisar, vídeos para assistir.
 
 Cada canal tem marca, estilo de vídeo, voz e conta do YouTube próprios. A verificação de fontes é uma etapa à parte, feita por um agente diferente do que pesquisa.
 
